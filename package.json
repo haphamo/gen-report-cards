@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/haphamo/gen-report-cards/issues"
   },
-  "homepage": "https://github.com/haphamo/gen-report-cards#readme"
+  "homepage": "https://github.com/haphamo/gen-report-cards#readme",
+  "dependencies": {
+    "csv-parser": "^2.3.2"
+  }
 }
