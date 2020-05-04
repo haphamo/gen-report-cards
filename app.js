@@ -46,7 +46,7 @@ async function readMarks() {
       // console.log(`${Object.keys(row)[1]}`)
     })
     .on('end', () => {
-      console.log(result.students)
+      console.log(result)
       
     })
   }
@@ -54,7 +54,7 @@ async function readMarks() {
     console.error(err)
   }
 }
-
+// create 2 more functions to add course and  test data
 
 writeDataToOutput()
 readMarks()
