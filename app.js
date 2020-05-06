@@ -24,7 +24,6 @@ async function readStudents() {
           id: parseInt(row.id),
           name: row.name,
           totalAverage: 0,
-          marks: [],
         };
         // result.students.sort(function(a, b) {
         //       return a.id - b.id;
@@ -46,7 +45,7 @@ async function addMarks() {
     fs.createReadStream(`./data/${args[3]}`)
       .pipe(csv())
       .on("data", (row) => {
-        allMarks.push(row)
+        allMarks.push({ test_id: parseInt(row.test_id), student_id: parseInt(row.student_id), mark: parseInt(row.mark) })
       })
       .on("end", (row) => {
         console.log("Finished Marks data")
@@ -67,7 +66,7 @@ async function addTests() {
     fs.createReadStream(`./data/${args[2]}`)
       .pipe(csv())
       .on("data", (row) => {
-        allTests.push(row)
+        allTests.push({ id: parseInt(row.id), course_id: parseInt(row.course_id), weight: parseInt(row.weight) })
       })
       .on("end", () => {
         allMarks.map(mark => {
@@ -75,6 +74,9 @@ async function addTests() {
           mark.course_id = addCourseAndWeight[0].course_id
           mark.weight = addCourseAndWeight[0].weight
         })
+        console.log(allMarks)
+        console.log("------------------------")
+        console.log(students)
         console.log("Finished adding tests");
       });
   } catch (err) {
@@ -82,6 +84,12 @@ async function addTests() {
   }
 }
 addTests();
+
+// filter the tests to calulcate the average in each course
+// filter all tests written by one student
+// const getAllTestsForAStudent = function(student_id) {
+//   allTests.map(test)
+// }
 
 
 // fs.createReadStream(`./data/${args[0]}`)
