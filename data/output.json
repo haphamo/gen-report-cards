@@ -1,1 +1,137 @@
-{"students":[{"id":1,"name":"Jenny Nguy","totalAverage":0,"courses":[]},{"id":2,"name":"Tammie Chung","totalAverage":0,"courses":[]},{"id":3,"name":"Tamires Lowande","totalAverage":0,"courses":[]}],"marks":[{"test_id":1,"student_id":1,"mark":78},{"test_id":2,"student_id":1,"mark":87},{"test_id":3,"student_id":1,"mark":95},{"test_id":4,"student_id":1,"mark":32},{"test_id":5,"student_id":1,"mark":65},{"test_id":6,"student_id":1,"mark":78},{"test_id":7,"student_id":1,"mark":40},{"test_id":1,"student_id":2,"mark":78},{"test_id":2,"student_id":2,"mark":87},{"test_id":3,"student_id":2,"mark":15},{"test_id":6,"student_id":2,"mark":78},{"test_id":7,"student_id":2,"mark":40},{"test_id":1,"student_id":3,"mark":78},{"test_id":2,"student_id":3,"mark":87},{"test_id":3,"student_id":3,"mark":95},{"test_id":4,"student_id":3,"mark":32},{"test_id":5,"student_id":3,"mark":65},{"test_id":6,"student_id":3,"mark":78},{"test_id":7,"student_id":3,"mark":40}]}
+{
+  "students": [
+    {
+      "id": 1,
+      "name": "Jenny Nguy",
+      "totalAverage": 0,
+      "courses": []
+    },
+    {
+      "id": 2,
+      "name": "Tammie Chung",
+      "totalAverage": 0,
+      "courses": []
+    },
+    {
+      "id": 3,
+      "name": "Tamires Lowande",
+      "totalAverage": 0,
+      "courses": []
+    }
+  ],
+  "marks": [
+    {
+      "test_id": 1,
+      "student_id": 1,
+      "mark": 78
+    },
+    {
+      "test_id": 2,
+      "student_id": 1,
+      "mark": 87
+    },
+    {
+      "test_id": 3,
+      "student_id": 1,
+      "mark": 95
+    },
+    {
+      "test_id": 4,
+      "student_id": 1,
+      "mark": 32
+    },
+    {
+      "test_id": 5,
+      "student_id": 1,
+      "mark": 65
+    },
+    {
+      "test_id": 6,
+      "student_id": 1,
+      "mark": 78
+    },
+    {
+      "test_id": 7,
+      "student_id": 1,
+      "mark": 40
+    },
+    {
+      "test_id": 1,
+      "student_id": 2,
+      "mark": 78
+    },
+    {
+      "test_id": 2,
+      "student_id": 2,
+      "mark": 87
+    },
+    {
+      "test_id": 3,
+      "student_id": 2,
+      "mark": 15
+    },
+    {
+      "test_id": 6,
+      "student_id": 2,
+      "mark": 78
+    },
+    {
+      "test_id": 7,
+      "student_id": 2,
+      "mark": 40
+    },
+    {
+      "test_id": 1,
+      "student_id": 3,
+      "mark": 78
+    },
+    {
+      "test_id": 2,
+      "student_id": 3,
+      "mark": 87
+    },
+    {
+      "test_id": 3,
+      "student_id": 3,
+      "mark": 95
+    },
+    {
+      "test_id": 4,
+      "student_id": 3,
+      "mark": 32
+    },
+    {
+      "test_id": 5,
+      "student_id": 3,
+      "mark": 65
+    },
+    {
+      "test_id": 6,
+      "student_id": 3,
+      "mark": 78
+    },
+    {
+      "test_id": 7,
+      "student_id": 3,
+      "mark": 40
+    }
+  ],
+  "tests": [],
+  "courses": [
+    {
+      "id": "1",
+      "name": "Biology",
+      "teacher": "Mr. D"
+    },
+    {
+      "id": "2",
+      "name": "History",
+      "teacher": " Mrs. P"
+    },
+    {
+      "id": "3",
+      "name": "Math",
+      "teacher": " Mrs. C"
+    }
+  ]
+}
