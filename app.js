@@ -8,7 +8,7 @@ let result = {
   students: [],
 };
 let students = {};
-let allCourses = {};
+let allCourses = [];
 let allMarks = [];
 let allTests = [];
 let testsData = {};
@@ -17,7 +17,7 @@ let testsData = {};
 
 async function readStudents() {
   try {
-    fs.createReadStream(`./data/${args[1]}`)
+    fs.createReadStream(`data/${args[1]}`)
       .pipe(csv())
       .on("data", (row) => {
         students[row.id] = {
@@ -25,13 +25,8 @@ async function readStudents() {
           name: row.name,
           totalAverage: 0,
         };
-        // result.students.sort(function(a, b) {
-        //       return a.id - b.id;
-        //     });
       })
       .on("end", () => {
-        // fs.createWriteStream(`data/${args[4]}`, 'utf8')
-        // .write(JSON.stringify(result));
         console.log("finished Student Data");
       });
   } catch (err) {
@@ -39,10 +34,9 @@ async function readStudents() {
   }
 };
 
-async function addMarks() {
-  // await readStudents();
+async function getAllMarks() {
   try {
-    fs.createReadStream(`./data/${args[3]}`)
+    fs.createReadStream(`data/${args[3]}`)
       .pipe(csv())
       .on("data", (row) => {
         allMarks.push({ test_id: parseInt(row.test_id), student_id: parseInt(row.student_id), mark: parseInt(row.mark) })
@@ -59,11 +53,13 @@ const findCourse = (test_id) => (
   allTests.filter(test => parseInt(test.id) === parseInt(test_id))
 )
 
-async function addTests() {
+async function addCourseAndWeightToMarks() {
+  // this function must wait for functions below to complete before executing
   readStudents();
-  addMarks();
+  getAllMarks();
+
   try {
-    fs.createReadStream(`./data/${args[2]}`)
+    fs.createReadStream(`data/${args[2]}`)
       .pipe(csv())
       .on("data", (row) => {
         allTests.push({ id: parseInt(row.id), course_id: parseInt(row.course_id), weight: parseInt(row.weight) })
@@ -74,16 +70,40 @@ async function addTests() {
           mark.course_id = addCourseAndWeight[0].course_id
           mark.weight = addCourseAndWeight[0].weight
         })
-        console.log(allMarks)
-        console.log("------------------------")
-        console.log(students)
         console.log("Finished adding tests");
       });
   } catch (err) {
     console.error(err);
   }
 }
-addTests();
+
+async function getAllCourses() {
+  addCourseAndWeightToMarks();
+  try {
+    fs.createReadStream(`data/${args[0]}`)
+    .pipe(csv())
+    .on("data", (row) => {
+      allCourses.push({id: parseInt(row.id), name: row.name, teacher: row.teacher})
+    })
+    .on("end", () => {
+      // console.log(allMarks)
+      // console.log("------------------------")
+      // console.log(students)
+      // console.log("------------------------")
+      console.log(getAllMarksForAStudent(1, allMarks))
+      console.log("Finished reading all courses.")
+    })
+  } catch(err) {
+    console.error(err)
+  }
+}
+
+getAllCourses();
+
+const getAllMarksForAStudent = ((student_id, dataSet) => (
+   dataSet.filter(mark => mark.student_id === student_id)
+))
+
 
 // filter the tests to calulcate the average in each course
 // filter all tests written by one student
