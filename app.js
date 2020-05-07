@@ -54,10 +54,6 @@ const findCourse = (test_id) => (
 )
 
 async function addCourseAndWeightToMarks() {
-  // this function must wait for functions below to complete before executing
-  readStudents();
-  getAllMarks();
-
   try {
     fs.createReadStream(`data/${args[2]}`)
       .pipe(csv())
@@ -78,6 +74,9 @@ async function addCourseAndWeightToMarks() {
 }
 
 async function getAllCourses() {
+    // this function must wait for functions below to complete before executing
+  readStudents();
+  getAllMarks();
   addCourseAndWeightToMarks();
   try {
     fs.createReadStream(`data/${args[0]}`)
@@ -86,11 +85,12 @@ async function getAllCourses() {
       allCourses.push({id: parseInt(row.id), name: row.name, teacher: row.teacher})
     })
     .on("end", () => {
-      // console.log(allMarks)
-      // console.log("------------------------")
-      // console.log(students)
-      // console.log("------------------------")
-      console.log(getAllMarksForAStudent(1, allMarks))
+      console.log(allMarks)
+      console.log("------------------------")
+      console.log(students)
+      console.log("------------------------")
+      console.log(allCourses)
+      // console.log(getAllMarksForAStudent(1, allMarks))
       console.log("Finished reading all courses.")
     })
   } catch(err) {
