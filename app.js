@@ -105,7 +105,7 @@ async function getAllCourses() {
         finalOutput[student.id].totalAverage = totalGradeAvgOfStudent
       })
       // below returns the final JSON result as a value
-      
+
       console.log({ students: Object.values(finalOutput) })
       
       console.log("Finished reading all courses.")
@@ -117,41 +117,9 @@ async function getAllCourses() {
 
 getAllCourses();
 
-
-const fixture2 = [
-  { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
-  { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
-  { test_id: 3, student_id: 1, mark: 95, course_id: 1, weight: 50 },
-  { test_id: 4, student_id: 1, mark: 32, course_id: 2, weight: 40 },
-  { test_id: 5, student_id: 1, mark: 65, course_id: 2, weight: 60 },
-  { test_id: 6, student_id: 1, mark: 78, course_id: 3, weight: 90 },
-  { test_id: 7, student_id: 1, mark: 40, course_id: 3, weight: 10 },
-  { test_id: 1, student_id: 2, mark: 78, course_id: 1, weight: 10 },
-  { test_id: 2, student_id: 2, mark: 87, course_id: 1, weight: 40 },
-  { test_id: 3, student_id: 2, mark: 15, course_id: 1, weight: 50 },
-  { test_id: 6, student_id: 2, mark: 78, course_id: 3, weight: 90 },
-  { test_id: 7, student_id: 2, mark: 40, course_id: 3, weight: 10 },
-  { test_id: 1, student_id: 3, mark: 78, course_id: 1, weight: 10 },
-  { test_id: 2, student_id: 3, mark: 87, course_id: 1, weight: 40 },
-  { test_id: 3, student_id: 3, mark: 95, course_id: 1, weight: 50 },
-  { test_id: 4, student_id: 3, mark: 32, course_id: 2, weight: 40 },
-  { test_id: 5, student_id: 3, mark: 65, course_id: 2, weight: 60 },
-  { test_id: 6, student_id: 3, mark: 78, course_id: 3, weight: 90 },
-  { test_id: 7, student_id: 3, mark: 40, course_id: 3, weight: 10 }
-]
 const getAllMarksForAStudent = (student_id => (
   fixture2.filter(mark => mark.student_id === student_id)
 ))
-
-const fixture = [
-  { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
-  { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
-  { test_id: 3, student_id: 1, mark: 95, course_id: 1, weight: 50 },
-  { test_id: 4, student_id: 1, mark: 32, course_id: 2, weight: 40 },
-  { test_id: 5, student_id: 1, mark: 65, course_id: 2, weight: 60 },
-  { test_id: 6, student_id: 1, mark: 78, course_id: 3, weight: 90 },
-  { test_id: 7, student_id: 1, mark: 40, course_id: 3, weight: 10 }
-]
 
 const getAllMarksForEachCourse = function(data) {
   const result = {};
@@ -184,28 +152,6 @@ const getStudentAverage = function(courseAveragesArg) {
   const sum = courseAveragesArg.reduce((acc, curr) => (acc + curr.courseAverage), 0) 
   return (sum / courseAveragesArg.length).toFixed(2)
 }
-
-// console.log(getStudentAverage(courseAverages))
-
-// fs.createReadStream(`./data/${args[0]}`)
-//   .pipe(csv())
-
-// streamReadStudents.on('data', (row) => {
-
-//     // set up data structure for students, parsed SID to a number
-//     result.students.push({id: parseInt(row.id), name: row.name, totalAverage: 0, courses: []})
-
-// })
-
-// streamReadStudents.on('end', () => {
-//   // sorts the students by id
-//   result.students.sort(function(a, b) {
-//     return a.id - b.id;
-//   });
-//   // path is the last arguement
-//   fs.createWriteStream('data/output.json', 'utf8')
-//   .write(JSON.stringify(result))
-// })
 
 // NTS--------------
 // JSON result is an obj with a students key (arr)
