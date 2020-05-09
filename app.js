@@ -96,7 +96,8 @@ async function getAllCourses() {
       // console.log("------------------------")
       // loop through all the students, for each student, get all the marks and calculate their course averages
       // retreive all tests written by each student
-      // allTestsForAStudent = 
+      allTestsForEachStudent = result.students.map(student => getAllMarksForAStudent(student.id)) 
+      console.log(allTestsForEachStudent)
 
       // console.log(allCourses)
       // console.log("Finished reading all courses.")
