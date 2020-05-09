@@ -4,10 +4,8 @@ const csv = require("csv-parser");
 const args = process.argv.slice(2);
 
 // final JSON
-let result = {
-  students: [],
-};
-let students = {};
+const finalOutput = {};
+let allStudentIds = []
 let allCourses = [];
 let allMarks = [];
 let allTests = [];
@@ -20,10 +18,10 @@ async function readStudents() {
     fs.createReadStream(`data/${args[1]}`)
       .pipe(csv())
       .on('data', (row) => {
-        result.students.push({id: parseInt(row.id),
+        allStudentIds.push({id: parseInt(row.id),
             name: row.name,
             totalAverage: 0});
-        students[row.id] = {id: parseInt(row.id),
+        finalOutput[row.id] = {id: parseInt(row.id),
           name: row.name,
           totalAverage: 0,
           courses: []};
@@ -87,7 +85,8 @@ async function getAllCourses() {
       allCourses.push({id: parseInt(row.id), name: row.name, teacher: row.teacher})
     })
     .on("end", () => {
-      result.students.map(function(student) {
+      // Later: make into a helper function
+      allStudentIds.map(function(student) {
         // this variable creates an array of all tests written each student in the students.csv
         const allTestsWrittenByEachStudent = getAllMarksForAStudent(student.id)
         // this variable filters all the tests and creates an obj with keys being the course if and the values is an array with the marks and weight calculation
@@ -97,13 +96,18 @@ async function getAllCourses() {
         // console.log('--------------')
         // console.log(allTestsByCourses)
         // console.log('--------------')
-        // console.log(students)
         const courseIdWithCourseAvgOfStudent = getCourseAverages(allTestsByCourses)
         // console.log(courseIdWithCourseAvgOfStudent)
-        students[student.id].courses = courseIdWithCourseAvgOfStudent
+        finalOutput[student.id].courses = courseIdWithCourseAvgOfStudent
+
+        const totalGradeAvgOfStudent = getStudentAverage(courseIdWithCourseAvgOfStudent)
+        // calculates the total avg for all courses
+        finalOutput[student.id].totalAverage = totalGradeAvgOfStudent
       })
-      console.log(students)
-      // console.log(result)
+      // below returns the final JSON result as a value
+      
+      console.log({ students: Object.values(finalOutput) })
+      
       console.log("Finished reading all courses.")
     })
   } catch(err) {
@@ -176,12 +180,11 @@ const getCourseAverages = function(dataObj) {
 
 const getStudentAverage = function(courseAveragesArg) {
   // console.log(courseAveragesArg)
-  // the args passed in is an arrat of objecgts
+  // the args passed in is an array of objects
   const sum = courseAveragesArg.reduce((acc, curr) => (acc + curr.courseAverage), 0) 
   return (sum / courseAveragesArg.length).toFixed(2)
 }
 
-// console.log(getStudentAverage(courseAverages))
 // console.log(getStudentAverage(courseAverages))
 
 // fs.createReadStream(`./data/${args[0]}`)
