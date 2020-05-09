@@ -11,7 +11,7 @@ let students = {};
 let allCourses = [];
 let allMarks = [];
 let allTests = [];
-let testsData = {};
+// let testsData = {};
 
 // console.log(args) // => [ 'courses.csv', 'students.csv', 'tests.csv', 'marks.csv', output.json ]
 
@@ -19,17 +19,14 @@ async function readStudents() {
   try {
     fs.createReadStream(`data/${args[1]}`)
       .pipe(csv())
-      // .on("data", (row) => {
-      //   students[row.id] = {
-      //     id: parseInt(row.id),
-      //     name: row.name,
-      //     totalAverage: 0,
-      //   };
-      // })
       .on('data', (row) => {
         result.students.push({id: parseInt(row.id),
             name: row.name,
-            totalAverage: 0})
+            totalAverage: 0});
+        students[row.id] = {id: parseInt(row.id),
+          name: row.name,
+          totalAverage: 0,
+          courses: []};
       })
       .on("end", () => {
         console.log("finished Student Data");
@@ -90,23 +87,24 @@ async function getAllCourses() {
       allCourses.push({id: parseInt(row.id), name: row.name, teacher: row.teacher})
     })
     .on("end", () => {
-      // console.log(result)
-      // console.log("------------------------")
-      // console.log(allMarks)
-      // console.log("------------------------")
-      // loop through all the students, for each student, get all the marks and calculate their course averages
-      // retreive all tests written by each student
       result.students.map(function(student) {
         // this variable creates an array of all tests written each student in the students.csv
         const allTestsWrittenByEachStudent = getAllMarksForAStudent(student.id)
         // this variable filters all the tests and creates an obj with keys being the course if and the values is an array with the marks and weight calculation
         const allTestsByCourses = getAllMarksForEachCourse(allTestsWrittenByEachStudent)
-        console.log(getCourseAverages(allTestsByCourses))
+        // console.log('--------------')
+        // console.log(student.id)
+        // console.log('--------------')
+        // console.log(allTestsByCourses)
+        // console.log('--------------')
+        // console.log(students)
+        const courseIdWithCourseAvgOfStudent = getCourseAverages(allTestsByCourses)
+        // console.log(courseIdWithCourseAvgOfStudent)
+        students[student.id].courses = courseIdWithCourseAvgOfStudent
       })
-      
-      
-      // console.log(allCourses)
-      // console.log("Finished reading all courses.")
+      console.log(students)
+      // console.log(result)
+      console.log("Finished reading all courses.")
     })
   } catch(err) {
     console.error(err)
