@@ -85,13 +85,12 @@ async function getAllCourses() {
       allCourses.push({id: parseInt(row.id), name: row.name, teacher: row.teacher})
     })
     .on("end", () => {
-      console.log(allMarks)
-      console.log("------------------------")
-      console.log(students)
-      console.log("------------------------")
-      console.log(allCourses)
-      // console.log(getAllMarksForAStudent(1, allMarks))
-      console.log("Finished reading all courses.")
+      // console.log(allMarks)
+      // console.log("------------------------")
+      // console.log(students)
+      // console.log("------------------------")
+      // console.log(allCourses)
+      // console.log("Finished reading all courses.")
     })
   } catch(err) {
     console.error(err)
@@ -104,13 +103,54 @@ const getAllMarksForAStudent = ((student_id, dataSet) => (
    dataSet.filter(mark => mark.student_id === student_id)
 ))
 
+const fixture = [
+  { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
+  { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
+  { test_id: 3, student_id: 1, mark: 95, course_id: 1, weight: 50 },
+  { test_id: 4, student_id: 1, mark: 32, course_id: 2, weight: 40 },
+  { test_id: 5, student_id: 1, mark: 65, course_id: 2, weight: 60 },
+  { test_id: 6, student_id: 1, mark: 78, course_id: 3, weight: 90 },
+  { test_id: 7, student_id: 1, mark: 40, course_id: 3, weight: 10 }
+]
 
-// filter the tests to calulcate the average in each course
-// filter all tests written by one student
-// const getAllTestsForAStudent = function(student_id) {
-//   allTests.map(test)
-// }
 
+const getAllMarksForEachCourse = function(data) {
+  const result = {};
+  data.map(item => {
+    
+    if(!result[item.course_id]) {
+      result[item.course_id] = [item.mark * (item.weight / 100)]
+    } else {
+      result[item.course_id].push(item.mark * (item.weight / 100))
+    }
+  })
+  return result;
+}
+
+const allMarksForEachCourse = getAllMarksForEachCourse(fixture)
+
+const getCourseAverages = function(dataObj) {
+  const result = [];
+  const dataObjToArr = Object.entries(dataObj)
+  for(let course of dataObjToArr) {
+    const courseAverage = course[1].reduce((acc, curr) => acc + curr)
+    result.push({id: course[0], courseAverage: courseAverage})
+  }
+  return result;
+}
+
+const courseAverages = getCourseAverages(allMarksForEachCourse)
+// console.log('courseAverages: ', courseAverages)
+
+const getStudentAverage = function(courseAveragesArg) {
+  // console.log(courseAveragesArg)
+  // the args passed in is an arrat of objecgts
+  const sum = courseAveragesArg.reduce((acc, curr) => (acc + curr.courseAverage), 0) 
+  return (sum / courseAveragesArg.length).toFixed(2)
+}
+
+console.log(getStudentAverage(courseAverages))
+// console.log(getStudentAverage(courseAverages))
 
 // fs.createReadStream(`./data/${args[0]}`)
 //   .pipe(csv())
