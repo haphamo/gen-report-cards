@@ -96,9 +96,12 @@ async function getAllCourses() {
       // console.log("------------------------")
       // loop through all the students, for each student, get all the marks and calculate their course averages
       // retreive all tests written by each student
-      allTestsForEachStudent = result.students.map(student => getAllMarksForAStudent(student.id)) 
-      console.log(allTestsForEachStudent)
-
+      result.students.map(function(student) {
+        const allTestsWrittenByEachStudent = getAllMarksForAStudent(student.id)
+        console.log(getAllMarksForEachCourse(allTestsWrittenByEachStudent))
+      })
+      
+      
       // console.log(allCourses)
       // console.log("Finished reading all courses.")
     })
@@ -134,7 +137,7 @@ const fixture2 = [
 const getAllMarksForAStudent = (student_id => (
   fixture2.filter(mark => mark.student_id === student_id)
 ))
-console.log(getAllMarksForAStudent(2))
+
 const fixture = [
   { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
   { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
@@ -145,11 +148,9 @@ const fixture = [
   { test_id: 7, student_id: 1, mark: 40, course_id: 3, weight: 10 }
 ]
 
-
 const getAllMarksForEachCourse = function(data) {
   const result = {};
   data.map(item => {
-    
     if(!result[item.course_id]) {
       result[item.course_id] = [item.mark * (item.weight / 100)]
     } else {
@@ -161,6 +162,7 @@ const getAllMarksForEachCourse = function(data) {
 
 const allMarksForEachCourse = getAllMarksForEachCourse(fixture)
 
+// console.log(allMarksForEachCourse)
 const getCourseAverages = function(dataObj) {
   const result = [];
   const dataObjToArr = Object.entries(dataObj)
