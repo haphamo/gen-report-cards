@@ -19,12 +19,17 @@ async function readStudents() {
   try {
     fs.createReadStream(`data/${args[1]}`)
       .pipe(csv())
-      .on("data", (row) => {
-        students[row.id] = {
-          id: parseInt(row.id),
-          name: row.name,
-          totalAverage: 0,
-        };
+      // .on("data", (row) => {
+      //   students[row.id] = {
+      //     id: parseInt(row.id),
+      //     name: row.name,
+      //     totalAverage: 0,
+      //   };
+      // })
+      .on('data', (row) => {
+        result.students.push({id: parseInt(row.id),
+            name: row.name,
+            totalAverage: 0})
       })
       .on("end", () => {
         console.log("finished Student Data");
@@ -85,10 +90,14 @@ async function getAllCourses() {
       allCourses.push({id: parseInt(row.id), name: row.name, teacher: row.teacher})
     })
     .on("end", () => {
+      // console.log(result)
+      // console.log("------------------------")
       // console.log(allMarks)
       // console.log("------------------------")
-      // console.log(students)
-      // console.log("------------------------")
+      // loop through all the students, for each student, get all the marks and calculate their course averages
+      // retreive all tests written by each student
+      // allTestsForAStudent = 
+
       // console.log(allCourses)
       // console.log("Finished reading all courses.")
     })
@@ -99,10 +108,32 @@ async function getAllCourses() {
 
 getAllCourses();
 
-const getAllMarksForAStudent = ((student_id, dataSet) => (
-   dataSet.filter(mark => mark.student_id === student_id)
-))
 
+const fixture2 = [
+  { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
+  { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
+  { test_id: 3, student_id: 1, mark: 95, course_id: 1, weight: 50 },
+  { test_id: 4, student_id: 1, mark: 32, course_id: 2, weight: 40 },
+  { test_id: 5, student_id: 1, mark: 65, course_id: 2, weight: 60 },
+  { test_id: 6, student_id: 1, mark: 78, course_id: 3, weight: 90 },
+  { test_id: 7, student_id: 1, mark: 40, course_id: 3, weight: 10 },
+  { test_id: 1, student_id: 2, mark: 78, course_id: 1, weight: 10 },
+  { test_id: 2, student_id: 2, mark: 87, course_id: 1, weight: 40 },
+  { test_id: 3, student_id: 2, mark: 15, course_id: 1, weight: 50 },
+  { test_id: 6, student_id: 2, mark: 78, course_id: 3, weight: 90 },
+  { test_id: 7, student_id: 2, mark: 40, course_id: 3, weight: 10 },
+  { test_id: 1, student_id: 3, mark: 78, course_id: 1, weight: 10 },
+  { test_id: 2, student_id: 3, mark: 87, course_id: 1, weight: 40 },
+  { test_id: 3, student_id: 3, mark: 95, course_id: 1, weight: 50 },
+  { test_id: 4, student_id: 3, mark: 32, course_id: 2, weight: 40 },
+  { test_id: 5, student_id: 3, mark: 65, course_id: 2, weight: 60 },
+  { test_id: 6, student_id: 3, mark: 78, course_id: 3, weight: 90 },
+  { test_id: 7, student_id: 3, mark: 40, course_id: 3, weight: 10 }
+]
+const getAllMarksForAStudent = (student_id => (
+  fixture2.filter(mark => mark.student_id === student_id)
+))
+console.log(getAllMarksForAStudent(2))
 const fixture = [
   { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
   { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
@@ -149,7 +180,7 @@ const getStudentAverage = function(courseAveragesArg) {
   return (sum / courseAveragesArg.length).toFixed(2)
 }
 
-console.log(getStudentAverage(courseAverages))
+// console.log(getStudentAverage(courseAverages))
 // console.log(getStudentAverage(courseAverages))
 
 // fs.createReadStream(`./data/${args[0]}`)
