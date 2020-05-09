@@ -97,8 +97,11 @@ async function getAllCourses() {
       // loop through all the students, for each student, get all the marks and calculate their course averages
       // retreive all tests written by each student
       result.students.map(function(student) {
+        // this variable creates an array of all tests written each student in the students.csv
         const allTestsWrittenByEachStudent = getAllMarksForAStudent(student.id)
-        console.log(getAllMarksForEachCourse(allTestsWrittenByEachStudent))
+        // this variable filters all the tests and creates an obj with keys being the course if and the values is an array with the marks and weight calculation
+        const allTestsByCourses = getAllMarksForEachCourse(allTestsWrittenByEachStudent)
+        console.log(getCourseAverages(allTestsByCourses))
       })
       
       
@@ -168,13 +171,10 @@ const getCourseAverages = function(dataObj) {
   const dataObjToArr = Object.entries(dataObj)
   for(let course of dataObjToArr) {
     const courseAverage = course[1].reduce((acc, curr) => acc + curr)
-    result.push({id: course[0], courseAverage: courseAverage})
+    result.push({id: Number(course[0]), courseAverage: Number(courseAverage.toFixed(2))})
   }
   return result;
 }
-
-const courseAverages = getCourseAverages(allMarksForEachCourse)
-// console.log('courseAverages: ', courseAverages)
 
 const getStudentAverage = function(courseAveragesArg) {
   // console.log(courseAveragesArg)
