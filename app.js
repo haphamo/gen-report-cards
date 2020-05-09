@@ -88,16 +88,12 @@ async function getAllCourses() {
       // Later: make into a helper function
       allStudentIds.map(function(student) {
         // this variable creates an array of all tests written each student in the students.csv
-        const allTestsWrittenByEachStudent = getAllMarksForAStudent(student.id)
+        const allTestsWrittenByEachStudent = getAllMarksForAStudent(student.id, allMarks)
         // this variable filters all the tests and creates an obj with keys being the course if and the values is an array with the marks and weight calculation
         const allTestsByCourses = getAllMarksForEachCourse(allTestsWrittenByEachStudent)
-        // console.log('--------------')
-        // console.log(student.id)
-        // console.log('--------------')
-        // console.log(allTestsByCourses)
-        // console.log('--------------')
+
         const courseIdWithCourseAvgOfStudent = getCourseAverages(allTestsByCourses)
-        // console.log(courseIdWithCourseAvgOfStudent)
+
         finalOutput[student.id].courses = courseIdWithCourseAvgOfStudent
 
         const totalGradeAvgOfStudent = getStudentAverage(courseIdWithCourseAvgOfStudent)
@@ -109,6 +105,7 @@ async function getAllCourses() {
       console.log({ students: Object.values(finalOutput) })
       
       console.log("Finished reading all courses.")
+      
     })
   } catch(err) {
     console.error(err)
@@ -117,9 +114,9 @@ async function getAllCourses() {
 
 getAllCourses();
 
-const getAllMarksForAStudent = (student_id => (
-  fixture2.filter(mark => mark.student_id === student_id)
-))
+const getAllMarksForAStudent = (student_id, dataObj) => (
+  dataObj.filter(mark => mark.student_id === student_id)
+)
 
 const getAllMarksForEachCourse = function(data) {
   const result = {};
@@ -132,8 +129,6 @@ const getAllMarksForEachCourse = function(data) {
   })
   return result;
 }
-
-const allMarksForEachCourse = getAllMarksForEachCourse(fixture)
 
 // console.log(allMarksForEachCourse)
 const getCourseAverages = function(dataObj) {
@@ -150,7 +145,7 @@ const getStudentAverage = function(courseAveragesArg) {
   // console.log(courseAveragesArg)
   // the args passed in is an array of objects
   const sum = courseAveragesArg.reduce((acc, curr) => (acc + curr.courseAverage), 0) 
-  return (sum / courseAveragesArg.length).toFixed(2)
+  return parseFloat((sum / courseAveragesArg.length).toFixed(2))
 }
 
 // NTS--------------
