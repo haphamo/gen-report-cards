@@ -13,7 +13,7 @@ let allTests = [];
 
 // console.log(args) // => [ 'courses.csv', 'students.csv', 'tests.csv', 'marks.csv', output.json ]
 
-async function readStudents() {
+async function getAllStudents() {
   try {
     fs.createReadStream(`data/${args[1]}`)
       .pipe(csv())
@@ -75,7 +75,7 @@ async function addCourseAndWeightToMarks() {
 
 async function getAllCourses() {
     // this function must wait for functions below to complete before executing
-  readStudents();
+  getAllStudents();
   getAllMarks();
   addCourseAndWeightToMarks();
   try {
@@ -102,10 +102,18 @@ async function getAllCourses() {
       })
       // below returns the final JSON result as a value
 
-      console.log({ students: Object.values(finalOutput) })
-      
+      const stringifiedOutput = JSON.stringify({ students: Object.values(finalOutput) })
       console.log("Finished reading all courses.")
-      
+      // console.log(stringifiedOutput)
+
+      fs.writeFileSync(`data/${args[4]}`, stringifiedOutput, err  => {
+        if(err) {
+          console.error(err)
+        } else {
+          // console.log(JSON.stringify(result))
+          console.log("File Written Successful!")
+        }
+      })
     })
   } catch(err) {
     console.error(err)
