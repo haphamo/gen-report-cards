@@ -2,7 +2,7 @@ const fs = require("fs");
 // const fsp = require("fs").promises;
 const csv = require("csv-parser");
 const args = process.argv.slice(2);
-const { calculateStudentAverage } = require('./helper')
+const { calculateStudentAverage } = require('./helperFunctions')
 
 // final JSON
 const finalOutput = {};
