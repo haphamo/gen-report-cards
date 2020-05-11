@@ -6,7 +6,7 @@ const args = process.argv.slice(2);
 // final JSON
 const finalOutput = {};
 let allStudentIds = []
-let allCourses = [];
+let allCourses = {};
 let allMarks = [];
 let allTests = [];
 // let testsData = {};
@@ -82,7 +82,8 @@ async function getAllCourses() {
     fs.createReadStream(`data/${args[0]}`)
     .pipe(csv())
     .on("data", (row) => {
-      allCourses.push({id: parseInt(row.id), name: row.name, teacher: row.teacher})
+      // allCourses.push({id: parseInt(row.id), name: row.name, teacher: row.teacher})
+      allCourses[row.id] = {id: parseInt(row.id), name: row.name, teacher: row.teacher}
     })
     .on("end", () => {
       // Later: make into a helper function
@@ -92,7 +93,11 @@ async function getAllCourses() {
         // this variable filters all the tests and creates an obj with keys being the course if and the values is an array with the marks and weight calculation
         const allTestsByCourses = getAllMarksForEachCourse(allTestsWrittenByEachStudent)
 
+        // console.log(allTestsByCourses)
+
         const courseIdWithCourseAvgOfStudent = getCourseAverages(allTestsByCourses)
+
+        // console.log(courseIdWithCourseAvgOfStudent)
 
         finalOutput[student.id].courses = courseIdWithCourseAvgOfStudent
 
@@ -101,16 +106,14 @@ async function getAllCourses() {
         finalOutput[student.id].totalAverage = totalGradeAvgOfStudent
       })
       // below returns the final JSON result as a value
-
       const stringifiedOutput = JSON.stringify({ students: Object.values(finalOutput) })
       console.log("Finished reading all courses.")
-      // console.log(stringifiedOutput)
 
-      fs.writeFileSync(`data/${args[4]}`, stringifiedOutput, err  => {
+      fs.writeFileSync(`data/${args[4]}`, stringifiedOutput, 'utf8', err  => {
+ 
         if(err) {
           console.error(err)
         } else {
-          // console.log(JSON.stringify(result))
           console.log("File Written Successful!")
         }
       })
@@ -139,13 +142,20 @@ const getAllMarksForEachCourse = function(data) {
 }
 
 // console.log(allMarksForEachCourse)
-const getCourseAverages = function(dataObj) {
+const getCourseAverages = function(allTestsByCourses, allCoursesData) {
   const result = [];
-  const dataObjToArr = Object.entries(dataObj)
+  const dataObjToArr = Object.entries(allTestsByCourses)
   for(let course of dataObjToArr) {
     const courseAverage = course[1].reduce((acc, curr) => acc + curr)
     result.push({id: Number(course[0]), courseAverage: Number(courseAverage.toFixed(2))})
   }
+
+  // ADD: Course teacher and name
+  result.map(courseAvg => {
+    courseAvg.name = allCourses[courseAvg.id].name
+    courseAvg.teacher = allCourses[courseAvg.id].teacher
+  })
+
   return result;
 }
 
