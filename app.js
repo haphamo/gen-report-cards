@@ -4,19 +4,29 @@ const csv = require("csv-parser");
 const args = process.argv.slice(2);
 const { addCourseWeightAndCourseId, readStudentDataAndSetUpFinalJsonStructure, readMarks, readTests, readCourses, generateJsonReportCardForAllStudents } = require('./helperFunctions')
 
-const finalOutput = {};
+// an obj with student id's as keys and the values are the students marks & avgs
+const jsonDataOfStudents = {};
+// jsonDataOfStudents has to be manipulated to match the stucture JSON end result
+let finalJsonResult = {};
+
+const readCsvFiles = {
+  allStudentIds: [],
+  allCourses: [],
+  allMarks: [],
+  allTests: []
+}
+
 let allStudentIds = [];
 let allCourses = {};
 let allMarks = [];
 let allTests = [];
-// console.log(args) // => [ 'courses.csv', 'students.csv', 'tests.csv', 'marks.csv', output.json ]
 
 async function getAllStudents() {
   try {
     fs.createReadStream(`data/${args[1]}`)
       .pipe(csv())
-      .on('data', (row) => {
-        readStudentDataAndSetUpFinalJsonStructure(allStudentIds, row, finalOutput)
+      .on("data", (row) => {
+        readStudentDataAndSetUpFinalJsonStructure(allStudentIds, row, jsonDataOfStudents)
       })
       .on("end", () => {
         console.log("Reading Student Data Complete!");
@@ -57,11 +67,10 @@ async function addCourseAndWeightToMarks() {
   }
 }
 
-async function getAllCourses() {
-  // this function must wait for functions below to complete before executing
-  getAllStudents();
-  getAllMarks();
-  addCourseAndWeightToMarks();
+async function getAllCoursesAndGenerateJson() {
+    getAllStudents();
+    getAllMarks();
+    addCourseAndWeightToMarks();
   try {
     fs.createReadStream(`data/${args[0]}`)
     .pipe(csv())
@@ -69,18 +78,18 @@ async function getAllCourses() {
       readCourses(allCourses, row)
     })
     .on("end", () => {
-      generateJsonReportCardForAllStudents(allStudentIds, allCourses, allMarks, finalOutput)
+      // 
+      generateJsonReportCardForAllStudents(allStudentIds, allCourses, allMarks, jsonDataOfStudents)
+      finalJsonResult = JSON.stringify({
+        students: Object.values(jsonDataOfStudents),
+      });
 
-      const stringifiedOutput = JSON.stringify({ students: Object.values(finalOutput) })
-      console.log("Finished reading all courses.")
-
-      fs.writeFileSync(`data/${args[4]}`, stringifiedOutput, 'utf8', err  => {
- 
+      console.log("Finished reading all courses and final JSON is almost complete!")
+      fs.writeFile(`data/${args[4]}`, finalJsonResult, (err) => {
         if(err) {
           console.error(err)
-        } else {
-          console.log("File Written Successful!")
         }
+        console.log("Writing Sucessful and Complete!")
       })
     })
   } catch(err) {
@@ -88,8 +97,7 @@ async function getAllCourses() {
   }
 }
 
-getAllCourses();
-
+getAllCoursesAndGenerateJson()
 
 
 // NTS--------------
