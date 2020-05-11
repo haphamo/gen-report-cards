@@ -1,7 +1,8 @@
 const fs = require("fs");
-const fsp = require("fs").promises;
+// const fsp = require("fs").promises;
 const csv = require("csv-parser");
 const args = process.argv.slice(2);
+const { calculateStudentAverage } = require('./helper')
 
 // final JSON
 const finalOutput = {};
@@ -9,8 +10,6 @@ let allStudentIds = []
 let allCourses = {};
 let allMarks = [];
 let allTests = [];
-// let testsData = {};
-
 // console.log(args) // => [ 'courses.csv', 'students.csv', 'tests.csv', 'marks.csv', output.json ]
 
 async function getAllStudents() {
@@ -93,15 +92,13 @@ async function getAllCourses() {
         // this variable filters all the tests and creates an obj with keys being the course if and the values is an array with the marks and weight calculation
         const allTestsByCourses = getAllMarksForEachCourse(allTestsWrittenByEachStudent)
 
-        // console.log(allTestsByCourses)
-
         const courseIdWithCourseAvgOfStudent = getCourseAverages(allTestsByCourses)
 
         // console.log(courseIdWithCourseAvgOfStudent)
 
         finalOutput[student.id].courses = courseIdWithCourseAvgOfStudent
 
-        const totalGradeAvgOfStudent = getStudentAverage(courseIdWithCourseAvgOfStudent)
+        const totalGradeAvgOfStudent = calculateStudentAverage(courseIdWithCourseAvgOfStudent)
         // calculates the total avg for all courses
         finalOutput[student.id].totalAverage = totalGradeAvgOfStudent
       })
@@ -141,7 +138,6 @@ const getAllMarksForEachCourse = function(data) {
   return result;
 }
 
-// console.log(allMarksForEachCourse)
 const getCourseAverages = function(allTestsByCourses, allCoursesData) {
   const result = [];
   const dataObjToArr = Object.entries(allTestsByCourses)
@@ -149,8 +145,7 @@ const getCourseAverages = function(allTestsByCourses, allCoursesData) {
     const courseAverage = course[1].reduce((acc, curr) => acc + curr)
     result.push({id: Number(course[0]), courseAverage: Number(courseAverage.toFixed(2))})
   }
-
-  // ADD: Course teacher and name
+  // Add course teacher and name to each student course avg
   result.map(courseAvg => {
     courseAvg.name = allCourses[courseAvg.id].name
     courseAvg.teacher = allCourses[courseAvg.id].teacher
@@ -159,12 +154,8 @@ const getCourseAverages = function(allTestsByCourses, allCoursesData) {
   return result;
 }
 
-const getStudentAverage = function(courseAveragesArg) {
-  // console.log(courseAveragesArg)
-  // the args passed in is an array of objects
-  const sum = courseAveragesArg.reduce((acc, curr) => (acc + curr.courseAverage), 0) 
-  return parseFloat((sum / courseAveragesArg.length).toFixed(2))
-}
+
+
 
 // NTS--------------
 // JSON result is an obj with a students key (arr)
