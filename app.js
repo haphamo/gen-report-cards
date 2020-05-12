@@ -54,7 +54,7 @@ async function addCourseAndWeightToMarks(testsCsv) {
       })
       .on("end", () => {
         addCourseWeightAndCourseId(readCsvFiles)
-        console.log("Reading Tests and added Course Weight and Id Complete!");
+        console.log("Reading Tests Data Complete!");
       });
   } catch (err) {
     console.error(err);
@@ -78,7 +78,7 @@ async function getAllCoursesAndGenerateJson(coursesCsv) {
       finalJsonResult = JSON.stringify({
         students: Object.values(jsonDataOfStudents),
       });
-      console.log("Finished reading all courses and final JSON is almost complete!")
+      console.log("Reading courses data complete! Final JSON is almost ready!")
       fs.writeFile(`data/${args[4]}`, finalJsonResult, (err) => {
         if(err) {
           console.error(err)
