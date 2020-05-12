@@ -16,19 +16,15 @@ const readCsvFiles = {
   allTests: []
 }
 
-let allStudentIds = [];
-let allCourses = {};
-let allMarks = [];
-let allTests = [];
-
-async function getAllStudents() {
+async function getAllStudents(studentsCsv) {
   try {
-    fs.createReadStream(`data/${args[1]}`)
+    fs.createReadStream(`data/${studentsCsv}`)
       .pipe(csv())
       .on("data", (row) => {
-        readStudentDataAndSetUpFinalJsonStructure(allStudentIds, row, jsonDataOfStudents)
+        readStudentDataAndSetUpFinalJsonStructure(readCsvFiles, row, jsonDataOfStudents)
       })
       .on("end", () => {
+        // console.log(jsonDataOfStudents)
         console.log("Reading Student Data Complete!");
       })
   } catch (err) {
@@ -36,12 +32,12 @@ async function getAllStudents() {
   }
 };
 
-async function getAllMarks() {
+async function getAllMarks(marksCsv) {
   try {
-    fs.createReadStream(`data/${args[3]}`)
+    fs.createReadStream(`data/${marksCsv}`)
       .pipe(csv())
       .on("data", (row) => {
-       readMarks(allMarks, row)
+       readMarks(readCsvFiles, row)
       })
       .on("end", (row) => {
         console.log("Reading Marks Data Complete!")
@@ -51,15 +47,15 @@ async function getAllMarks() {
   }
 }
 
-async function addCourseAndWeightToMarks() {
+async function addCourseAndWeightToMarks(testsCsv) {
   try {
-    fs.createReadStream(`data/${args[2]}`)
+    fs.createReadStream(`data/${testsCsv}`)
       .pipe(csv())
       .on("data", (row) => {
-        readTests(allTests, row)
+        readTests(readCsvFiles, row)
       })
       .on("end", () => {
-        addCourseWeightAndCourseId(allMarks, allTests)
+        addCourseWeightAndCourseId(readCsvFiles)
         console.log("Reading Tests and added Course Weight and Id Complete!");
       });
   } catch (err) {
@@ -67,23 +63,22 @@ async function addCourseAndWeightToMarks() {
   }
 }
 
-async function getAllCoursesAndGenerateJson() {
-    getAllStudents();
-    getAllMarks();
-    addCourseAndWeightToMarks();
+async function getAllCoursesAndGenerateJson(coursesCsv) {
+    getAllStudents(args[1]);
+    getAllMarks(args[3]);
+    addCourseAndWeightToMarks(args[2]);
   try {
-    fs.createReadStream(`data/${args[0]}`)
+    fs.createReadStream(`data/${coursesCsv}`)
     .pipe(csv())
     .on("data", (row) => {
-      readCourses(allCourses, row)
+      readCourses(readCsvFiles, row)
     })
     .on("end", () => {
-      // 
-      generateJsonReportCardForAllStudents(allStudentIds, allCourses, allMarks, jsonDataOfStudents)
+      generateJsonReportCardForAllStudents(readCsvFiles, jsonDataOfStudents)
       finalJsonResult = JSON.stringify({
         students: Object.values(jsonDataOfStudents),
       });
-
+      // console.log('here: ', jsonDataOfStudents)
       console.log("Finished reading all courses and final JSON is almost complete!")
       fs.writeFile(`data/${args[4]}`, finalJsonResult, (err) => {
         if(err) {
@@ -97,13 +92,8 @@ async function getAllCoursesAndGenerateJson() {
   }
 }
 
-getAllCoursesAndGenerateJson()
-
+getAllCoursesAndGenerateJson(args[0])
 
 // NTS--------------
-// JSON result is an obj with a students key (arr)
-// students.csv has a similar to the final result
-// use map to generate the students arr
-// node app.js courses.csv students.csv tests.csv marks.csv output.json
 // fs.createReadStream: It will read the file in chunks of the size which is specified before hand
 // fs.readFile: It will read the file completely into memory before making it available for the user
