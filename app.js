@@ -8,7 +8,7 @@ const { addCourseWeightAndCourseId, readStudentDataAndSetUpFinalJsonStructure, r
 const jsonDataOfStudents = {};
 // jsonDataOfStudents has to be manipulated to match the stucture JSON end result
 let finalJsonResult = {};
-
+// where I keep info after reading files, to do caluclations
 const readCsvFiles = {
   allStudentIds: [],
   allCourses: [],
@@ -24,7 +24,6 @@ async function getAllStudents(studentsCsv) {
         readStudentDataAndSetUpFinalJsonStructure(readCsvFiles, row, jsonDataOfStudents)
       })
       .on("end", () => {
-        // console.log(jsonDataOfStudents)
         console.log("Reading Student Data Complete!");
       })
   } catch (err) {
@@ -63,6 +62,7 @@ async function addCourseAndWeightToMarks(testsCsv) {
   }
 }
 
+// this is the final read and the readCsvFiles obj has all the data required to do calculations
 async function getAllCoursesAndGenerateJson(coursesCsv) {
     getAllStudents(args[1]);
     getAllMarks(args[3]);
@@ -75,10 +75,11 @@ async function getAllCoursesAndGenerateJson(coursesCsv) {
     })
     .on("end", () => {
       generateJsonReportCardForAllStudents(readCsvFiles, jsonDataOfStudents)
+      console.log('here! :', jsonDataOfStudents)
+      
       finalJsonResult = JSON.stringify({
         students: Object.values(jsonDataOfStudents),
       });
-      // console.log('here: ', jsonDataOfStudents)
       console.log("Finished reading all courses and final JSON is almost complete!")
       fs.writeFile(`data/${args[4]}`, finalJsonResult, (err) => {
         if(err) {

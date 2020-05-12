@@ -8,21 +8,23 @@ const calculateStudentAverage = (courseAveragesArg) => {
 };
 
 // filters an array of all tests to return only tests corresponding to a student id
-const filterMarks = (student_id, allTests) =>
-  allTests.filter((mark) => mark.student_id === student_id);
+const filterMarks = (student_id, readCsvFiles) => {
+  return readCsvFiles.allMarks.filter((mark) => mark.student_id == student_id);
+}
 
 // finds the course that the test is associated with
-const findCourse = (test_id, allTests) =>
-  allTests.filter((test) => parseInt(test.id) === parseInt(test_id));
+const findCourse = (test_id, readCsvFiles) =>
+  readCsvFiles.allTests.filter((test) => parseInt(test.id) === parseInt(test_id));
 
 // Adds the course weight and id keys to each test obj
-const addCourseWeightAndCourseId = (allMarks, allTests) => {
-  allMarks.map((mark) => {
+const addCourseWeightAndCourseId = (readCsvFiles) => {
+  readCsvFiles.allMarks.map((mark) => {
     // find the associated course to each test
-    const addCourseAndWeight = findCourse(mark.test_id, allTests);
+    const addCourseAndWeight = findCourse(mark.test_id, readCsvFiles);
     mark.course_id = addCourseAndWeight[0].course_id;
     mark.weight = addCourseAndWeight[0].weight;
   });
+  // console.log(readCsvFiles.allMarks)
 };
 
 const calculateAllMarksForEachCourse = (allTestsWrittenByASingleStudent) => {
@@ -39,9 +41,11 @@ const calculateAllMarksForEachCourse = (allTestsWrittenByASingleStudent) => {
   return result;
 };
 
-const calculateCourseAverages = (allTestsByCourses, allCoursesData) => {
-  // console.log("Waiting for this one: ", allCoursesData)
+// receives array of marks for a course, calculates the course avg and adds in the name and teacher at the end
+const calculateCourseAverages = (allTestsByCourses, readCsvFiles) => {
+
   const result = [];
+
   const dataObjToArr = Object.entries(allTestsByCourses);
   for (let course of dataObjToArr) {
     const courseAverage = course[1].reduce((acc, curr) => acc + curr);
@@ -52,8 +56,8 @@ const calculateCourseAverages = (allTestsByCourses, allCoursesData) => {
   }
   // Add course teacher and name to each student course avg
   result.map((courseAvg) => {
-    courseAvg.name = allCoursesData[courseAvg.id].name;
-    courseAvg.teacher = allCoursesData[courseAvg.id].teacher;
+    courseAvg.name = readCsvFiles.allCourses[courseAvg.id].name;
+    courseAvg.teacher = readCsvFiles.allCourses[courseAvg.id].teacher;
   });
   return result;
 };
@@ -62,11 +66,11 @@ const calculateCourseAverages = (allTestsByCourses, allCoursesData) => {
 // 1. pushes each unique student into an empty arr (the first arg), the result is used to a calculate the avgs in a different function
 // 2. sets up the final JSON output with the student id and name
 const readStudentDataAndSetUpFinalJsonStructure = (
-  allStudentsArr,
+  readCsvFiles,
   studentRowFromCsv,
   finalJsonOutput
 ) => {
-  allStudentsArr.push({
+  readCsvFiles.allStudentIds.push({
     id: parseInt(studentRowFromCsv.id),
     name: studentRowFromCsv.name,
   });
@@ -80,46 +84,48 @@ const readStudentDataAndSetUpFinalJsonStructure = (
 };
 
 // reads the marks.csv to push marks data into an array
-const readMarks = (allMarksArr, markRowFromCsv) =>
-  allMarksArr.push({
+const readMarks = (readCsvFiles, markRowFromCsv) => {
+
+  readCsvFiles.allMarks.push({
     test_id: parseInt(markRowFromCsv.test_id),
     student_id: parseInt(markRowFromCsv.student_id),
     mark: parseInt(markRowFromCsv.mark),
   });
 
+}
+
 // read tests.csv and creates and pushes data into an empty arr, so that the weights and course id can be added to each test written by the students
-const readTests = (allTestsArr, testRowFromCsv) =>
-  allTestsArr.push({
+const readTests = (readCsvFiles, testRowFromCsv) => {
+  readCsvFiles.allTests.push({
     id: parseInt(testRowFromCsv.id),
     course_id: parseInt(testRowFromCsv.course_id),
     weight: parseInt(testRowFromCsv.weight),
   });
+  // console.log(readCsvFiles)
+}
 
-const readCourses = (allCoursesArr, coursesRowFromCsv) =>
-  (allCoursesArr[coursesRowFromCsv.id] = {
+const readCourses = (readCsvFiles, coursesRowFromCsv) => {
+  readCsvFiles.allCourses[coursesRowFromCsv.id] = {
     id: parseInt(coursesRowFromCsv.id),
     name: coursesRowFromCsv.name,
     teacher: coursesRowFromCsv.teacher,
-  });
+  };
+}
 
 // maps through an array of all students to create their report card object
-const generateJsonReportCardForAllStudents = function (
-  allStudentsArr,
-  allCoursesArr,
-  allMarks,
-  jsonDataOfStudents
-) {
-  allStudentsArr.map(function (student) {
+const generateJsonReportCardForAllStudents = function (readCsvFiles, jsonDataOfStudents) {
+  readCsvFiles.allStudentIds.map(function(student) {
     // this variable creates an array of all tests written each student in the students.csv
-    const allTestsWrittenByEachStudent = filterMarks(student.id, allMarks);
+    const allTestsWrittenByEachStudent = filterMarks(student.id, readCsvFiles);
+   
     // this variable filters all the tests and creates an obj with keys being the course if and the values is an array with the marks and weight calculation
     const allTestsByCourses = calculateAllMarksForEachCourse(
       allTestsWrittenByEachStudent
     );
-
+    
     const courseIdWithCourseAvgOfStudent = calculateCourseAverages(
       allTestsByCourses,
-      allCoursesArr
+      readCsvFiles
     );
 
     jsonDataOfStudents[student.id].courses = courseIdWithCourseAvgOfStudent;
@@ -131,8 +137,6 @@ const generateJsonReportCardForAllStudents = function (
     jsonDataOfStudents[student.id].totalAverage = totalGradeAvgOfStudent;
   });
 };
-
-
 
 module.exports = {
   addCourseWeightAndCourseId,
