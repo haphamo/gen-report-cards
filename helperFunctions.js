@@ -45,13 +45,16 @@ const calculateCourseAverages = (allTestsByCourses, readCsvFiles) => {
   // create async function to calculate the result to return then map through it
   let result = [];
   const dataObjToArr = Object.entries(allTestsByCourses);
-  for (let course of dataObjToArr) {
+  dataObjToArr.map(async course => {
     const courseAverage = course[1].reduce((acc, curr) => acc + curr);
     result.push({
       id: Number(course[0]),
       courseAverage: Number(courseAverage.toFixed(2)),
     });
-  }
+  })
+
+
+  //sync issues, result maps before the above function completes
   // Add course teacher and name to each student course avg
   result.map(courseAvg => {
     courseAvg.name = readCsvFiles.allCourses[courseAvg.id].name;
