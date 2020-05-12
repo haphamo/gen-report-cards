@@ -1,5 +1,4 @@
 const fs = require("fs");
-// const fsp = require("fs").promises;
 const csv = require("csv-parser");
 const args = process.argv.slice(2);
 const { addCourseWeightAndCourseId, readStudentDataAndSetUpFinalJsonStructure, readMarks, readTests, readCourses, generateJsonReportCardForAllStudents } = require('./helperFunctions')
