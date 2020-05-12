@@ -1,7 +1,7 @@
 const fs = require("fs");
 const csv = require("csv-parser");
 const args = process.argv.slice(2);
-const { addCourseWeightAndCourseId, readStudentDataAndSetUpFinalJsonStructure, readMarks, readTests, readCourses, generateJsonReportCardForAllStudents } = require('./helperFunctions')
+const { addCourseWeightAndCourseId, readStudentDataAndSetUpFinalJsonStructure, readMarks, readTests, readCourses, generateJsonReportCardForAllStudents, checkSumOfAllCourseWeights } = require('./helperFunctions')
 
 // an obj with student id's as keys and the values are the students marks & avgs
 const jsonDataOfStudents = {};
@@ -76,11 +76,11 @@ async function getAllCoursesAndGenerateJson(coursesCsv) {
     })
     .on("end", () => {
       generateJsonReportCardForAllStudents(readCsvFiles, jsonDataOfStudents)
-      // console.log('read data: ', readCsvFiles)
       finalJsonResult = JSON.stringify({
         students: Object.values(jsonDataOfStudents),
       });
       console.log("Reading courses data complete! Final JSON is almost ready!")
+      checkSumOfAllCourseWeights(readCsvFiles)
       fs.writeFile(`data/${args[4]}`, finalJsonResult, (err) => {
         if(err) {
           console.error(err)
