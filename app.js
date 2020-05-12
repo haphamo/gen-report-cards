@@ -10,7 +10,7 @@ let finalJsonResult = {};
 // where I keep info after reading files, to do caluclations
 const readCsvFiles = {
   allStudentIds: [],
-  allCourses: [],
+  allCourses: {},
   allMarks: [],
   allTests: []
 }
