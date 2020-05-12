@@ -23,6 +23,7 @@ async function getAllStudents(studentsCsv) {
         readStudentDataAndSetUpFinalJsonStructure(readCsvFiles, row, jsonDataOfStudents)
       })
       .on("end", () => {
+       
         console.log("Reading Student Data Complete!");
       })
   } catch (err) {
@@ -38,6 +39,7 @@ async function getAllMarks(marksCsv) {
        readMarks(readCsvFiles, row)
       })
       .on("end", (row) => {
+ 
         console.log("Reading Marks Data Complete!")
       });
   } catch (err) {
@@ -63,9 +65,9 @@ async function addCourseAndWeightToMarks(testsCsv) {
 
 // this is the final read and the readCsvFiles obj has all the data required to do calculations
 async function getAllCoursesAndGenerateJson(coursesCsv) {
-    getAllStudents(args[1]);
-    getAllMarks(args[3]);
-    addCourseAndWeightToMarks(args[2]);
+  getAllStudents(args[1]);
+  getAllMarks(args[3]);
+  addCourseAndWeightToMarks(args[2]);
   try {
     fs.createReadStream(`data/${coursesCsv}`)
     .pipe(csv())
@@ -74,7 +76,7 @@ async function getAllCoursesAndGenerateJson(coursesCsv) {
     })
     .on("end", () => {
       generateJsonReportCardForAllStudents(readCsvFiles, jsonDataOfStudents)
-      
+      // console.log('read data: ', readCsvFiles)
       finalJsonResult = JSON.stringify({
         students: Object.values(jsonDataOfStudents),
       });

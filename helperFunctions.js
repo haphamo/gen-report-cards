@@ -40,11 +40,11 @@ const calculateAllMarksForEachCourse = (allTestsWrittenByASingleStudent) => {
   return result;
 };
 
+// const fixture = { '1': [ 1.3 ], '2': [ 12.8, 39 ] }
+
 // receives array of marks for a course, calculates the course avg and adds in the name and teacher at the end
-// async function calculateCourseAvgs() {
-//   let result;
-// }
 const calculateCourseAverages = (allTestsByCourses, readCsvFiles) => {
+  // console.log(allTestsByCourses)
   // create async function to calculate the result to return then map through it
   let result = [];
   const dataObjToArr = Object.entries(allTestsByCourses);
@@ -150,14 +150,41 @@ const generateJsonReportCardForAllStudents = function (readCsvFiles, jsonDataOfS
 // create a function that checks
 // The sum of all the weights of every test in a particular course should add up to 100. You
 // are allowed to throw errors in your report card generation script if this is not the case.
+const fixture2 = [
+  { id: 1, course_id: 1, weight: 10 },
+  { id: 2, course_id: 1, weight: 40 },
+  { id: 3, course_id: 1, weight: 50 },
+  { id: 4, course_id: 2, weight: 40 },
+  { id: 5, course_id: 2, weight: 50 }
+]
 
-const checkSumOfAllCourseWeights = function(allCourses) {
+const fixture3 = {
+  '1': { id: 1, name: 'Biology', teacher: 'Mr. D' },
+  '2': { id: 2, name: 'History', teacher: ' Mrs. P' }
+}
+
+const checkSumOfAllCourseWeights = function(allTests, allCourses) {
   // returns boolean
   // accepts all courses
   // return the course that does not add up to 100 ?
-  console.log(allCourses)
+  allTests.map(test => 
+    allCourses[test.course_id].totalTestWeight ? allCourses[test.course_id].totalTestWeight += test.weight : allCourses[test.course_id].totalTestWeight = test.weight
+  )
+  
+  const coursesWhoseWeightDoNotAddUpTo100 = Object.values(allCourses).filter(course => 
+     course.totalTestWeight < 100)
+  
+  const result = coursesWhoseWeightDoNotAddUpTo100.map(course => (`${course.name}: ${course.totalTestWeight}`))
+  if(result.length === 0) {
+    return `All tests for course weights add up to 100!`
+  } else {
+    return `There are courses whose tests weights do not add up to 100! ${result}`
+  }
 }
 
+console.log(checkSumOfAllCourseWeights(fixture2, fixture3))
+
+// checkSumOfAllCourseWeights()
 // Not every student is enrolled in all courses – a student is considered to be enrolled in a
 // course if they have taken a least one test for that course
 // Not every student has taken all tests of a course - If a student missed a test, he or she
