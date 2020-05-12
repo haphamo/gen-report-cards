@@ -74,7 +74,6 @@ async function getAllCoursesAndGenerateJson(coursesCsv) {
     })
     .on("end", () => {
       generateJsonReportCardForAllStudents(readCsvFiles, jsonDataOfStudents)
-      console.log('here! :', jsonDataOfStudents)
       
       finalJsonResult = JSON.stringify({
         students: Object.values(jsonDataOfStudents),
@@ -93,7 +92,3 @@ async function getAllCoursesAndGenerateJson(coursesCsv) {
 }
 
 getAllCoursesAndGenerateJson(args[0])
-
-// NTS--------------
-// fs.createReadStream: It will read the file in chunks of the size which is specified before hand
-// fs.readFile: It will read the file completely into memory before making it available for the user
