@@ -53,8 +53,6 @@ const calculateCourseAverages = (allTestsByCourses, readCsvFiles) => {
     });
   })
 
-
-  //sync issues, result maps before the above function completes
   // Add course teacher and name to each student course avg
   result.map(courseAvg => {
     courseAvg.name = readCsvFiles.allCourses[courseAvg.id].name;
@@ -115,23 +113,30 @@ const readCourses = (readCsvFiles, coursesRowFromCsv) => {
       id: parseInt(coursesRowFromCsv.id),
       name: coursesRowFromCsv.name,
       teacher: coursesRowFromCsv.teacher,
+      numOfTests: 0
     }
   }
 }
 
+const checkMissingTests = function(readCsvFiles) {
+  readCsvFiles.allTests.map(test => {
+    readCsvFiles.allCourses[test.course_id].numOfTests += 1
+  })
+}
+
 // maps through an array of all students to create their report card object
-const generateJsonReportCardForAllStudents = function (readCsvFiles, jsonDataOfStudents) {
-  
+const generateJsonReportCardForAllStudents = function(readCsvFiles, jsonDataOfStudents) {
+  checkMissingTests(readCsvFiles)
   readCsvFiles.allStudentIds.map(function(student) {
     // this variable creates an array of all tests written each student in the students.csv
     const allTestsWrittenByEachStudent = filterMarks(student.id, readCsvFiles);
-    // add in other tests from enrolled courses that student has not written!
-
-    // this variable filters all the tests and creates an obj with keys being the course if and the values is an array with the marks and weight calculation
+  
     const allTestsByCourses = calculateAllMarksForEachCourse(
       allTestsWrittenByEachStudent
     );
-   
+
+    // look at all tests written, find uniqu course_id, use that course_id to loop into the test bank to make sure all the test are prestn in students written test otherwise push in an 0 mark to calculate the course avg
+
     const courseIdWithCourseAvgOfStudent = calculateCourseAverages(
       allTestsByCourses,
       readCsvFiles
@@ -145,14 +150,24 @@ const generateJsonReportCardForAllStudents = function (readCsvFiles, jsonDataOfS
     // calculates the total avg for all courses
     jsonDataOfStudents[student.id].totalAverage = totalGradeAvgOfStudent;
   });
+  console.log(readCsvFiles)
 };
 
+// The sum of all the weights of every test in a particular course should add up to 100
 const checkSumOfAllCourseWeights = function(readCsvFiles) {
   const {allTests, allCourses} = readCsvFiles
-  allTests.map(test => 
+  allTests.map(test => {
     allCourses[test.course_id].totalTestWeight ? allCourses[test.course_id].totalTestWeight += test.weight : allCourses[test.course_id].totalTestWeight = test.weight
-  )
+    
+
+    
+  })
   
+  // console.log(allCourses)
+  // create another key/value, contains all the tests for the course
+  // loop through all the tests add them to the courses accordingly
+  
+
   const coursesWhoseWeightDoNotAddUpTo100 = Object.values(allCourses).filter(course => 
      course.totalTestWeight < 100)
   
@@ -168,7 +183,27 @@ const checkSumOfAllCourseWeights = function(readCsvFiles) {
 // course if they have taken a least one test for that course
 // Not every student has taken all tests of a course - If a student missed a test, he or she
 // should receive a 0 for that course.
+const fixture = {
+  allMarks: [
+              { test_id: 4, student_id: 5, mark: 32, course_id: 2, weight: 40 },
+              { test_id: 5, student_id: 5, mark: 65, course_id: 2, weight: 60 },
+              { test_id: 1, student_id: 5, mark: 13, course_id: 1, weight: 10 }
+            ],
+  allTests: [
+              { id: 1, course_id: 1, weight: 10 },
+              { id: 2, course_id: 1, weight: 40 },
+              { id: 3, course_id: 1, weight: 50 },
+              { id: 4, course_id: 2, weight: 40 },
+              { id: 5, course_id: 2, weight: 60 }
+            ]
+}
 
+const addMissedTests = function(data) {
+
+
+  // console.log(fixture)
+}
+addMissedTests(fixture);
 module.exports = {
   addCourseWeightAndCourseId,
   readStudentDataAndSetUpFinalJsonStructure,
