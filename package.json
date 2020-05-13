@@ -4,7 +4,7 @@
   "description": "hatchways general software assessment: report cards",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha 'tests/**/*.js'"
   },
   "repository": {
     "type": "git",

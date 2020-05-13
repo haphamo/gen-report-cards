@@ -187,11 +187,17 @@ const checkSumOfAllCourseWeights = function(readCsvFiles) {
 }
 
 module.exports = {
+  calculateStudentAverage,
+  filterMarks,
+  addCourseWeightAndCourseId,
+  calculateCourseAverages,
+  checkMissingTests,
   addCourseWeightAndCourseId,
   readStudentDataAndSetUpFinalJsonStructure,
   readMarks,
   readTests,
   readCourses,
   generateJsonReportCardForAllStudents,
-  checkSumOfAllCourseWeights
+  checkSumOfAllCourseWeights,
+  calculateAllMarksForEachCourse
 };

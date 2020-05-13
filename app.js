@@ -23,7 +23,6 @@ async function getAllStudents(studentsCsv) {
         readStudentDataAndSetUpFinalJsonStructure(readCsvFiles, row, jsonDataOfStudents)
       })
       .on("end", () => {
-       
         console.log("Reading Student Data Complete!");
       })
   } catch (err) {
@@ -39,7 +38,6 @@ async function getAllMarks(marksCsv) {
        readMarks(readCsvFiles, row)
       })
       .on("end", (row) => {
- 
         console.log("Reading Marks Data Complete!")
       });
   } catch (err) {
