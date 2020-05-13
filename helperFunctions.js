@@ -18,9 +18,11 @@ const findCourse = (test_id, readCsvFiles) =>
 
 // Adds the course weight and id keys to each test obj
 const addCourseWeightAndCourseId = (readCsvFiles) => {
+  // console.log('data: ', readCsvFiles)
   readCsvFiles.allMarks.map((mark) => {
     // find the associated course to each test
     const addCourseAndWeight = findCourse(mark.test_id, readCsvFiles);
+    
     mark.course_id = addCourseAndWeight[0].course_id;
     mark.weight = addCourseAndWeight[0].weight;
   });
@@ -46,7 +48,7 @@ const calculateCourseAverages = (allTestsByCourses, readCsvFiles) => {
   let result = [];
   const dataObjToArr = Object.entries(allTestsByCourses);
 
-  dataObjToArr.map(async course => {
+  dataObjToArr.map(course => {
     // checks if number of tests written for a course matches the total number of tests for a course
     // if student has written all tests for a course, function proceeds to calculate the course avg
     if(course[1].length === readCsvFiles.allCourses[course[0]].numOfTests) {
@@ -55,14 +57,13 @@ const calculateCourseAverages = (allTestsByCourses, readCsvFiles) => {
         id: Number(course[0]),
         courseAverage: Number(courseAverage.toFixed(2)),
       });
-      console.log("Student has not missed any tests!")
       // otherwise the student receives a 0 if they have missed a test
     } else {
       result.push({
         id: Number(course[0]),
         courseAverage: 0,
       });
-      console.log(`Student has missed tests! Course avg for ${readCsvFiles.allCourses[course[0]].name} is 0!!`)
+      // console.log(`Student has missed tests! Course avg for ${readCsvFiles.allCourses[course[0]].name} is 0!!`)
     }
   })
  
@@ -100,6 +101,7 @@ const readStudentDataAndSetUpFinalJsonStructure = (
 
 // reads the marks.csv to push marks data into an array
 const readMarks = (readCsvFiles, markRowFromCsv) => {
+  // console.log('marks: ', markRowFromCsv)
   if(Object.keys(markRowFromCsv).length > 0) {
     readCsvFiles.allMarks.push({
       test_id: parseInt(markRowFromCsv.test_id),
@@ -111,6 +113,7 @@ const readMarks = (readCsvFiles, markRowFromCsv) => {
 
 // read tests.csv and creates and pushes data into an empty arr, so that the weights and course id can be added to each test written by the students
 const readTests = (readCsvFiles, testRowFromCsv) => {
+  // console.log('test: ', testRowFromCsv)
   if(Object.keys(testRowFromCsv).length > 0) {
     readCsvFiles.allTests.push({
       id: parseInt(testRowFromCsv.id),
@@ -182,11 +185,6 @@ const checkSumOfAllCourseWeights = function(readCsvFiles) {
     console.log(`There are courses whose tests weights do not add up to 100! ${result}`)
   }
 }
-
-// Not every student is enrolled in all courses – a student is considered to be enrolled in a
-// course if they have taken a least one test for that course
-// Not every student has taken all tests of a course - If a student missed a test, he or she
-// should receive a 0 for that course.
 
 module.exports = {
   addCourseWeightAndCourseId,

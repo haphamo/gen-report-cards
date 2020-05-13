@@ -7,7 +7,7 @@ const { addCourseWeightAndCourseId, readStudentDataAndSetUpFinalJsonStructure, r
 const jsonDataOfStudents = {};
 // jsonDataOfStudents has to be manipulated to match the stucture JSON end result
 let finalJsonResult = {};
-// where I keep info after reading files, to do caluclations
+// where I keep data after reading files, to do caluclations
 const readCsvFiles = {
   allStudentIds: [],
   allCourses: {},
