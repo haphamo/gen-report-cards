@@ -69,7 +69,6 @@ async function getAllCoursesAndGenerateJson(coursesCsv) {
   getAllMarks(args[3]);
   addCourseAndWeightToMarks(args[2]);
   try {
-
     fs.createReadStream(`data/${coursesCsv}`)
     .pipe(csv())
     .on("data", (row) => {
@@ -82,7 +81,6 @@ async function getAllCoursesAndGenerateJson(coursesCsv) {
       });
       console.log("Reading courses data complete! Final JSON is almost ready!")
       checkSumOfAllCourseWeights(readCsvFiles)
-      // console.log(readCsvFiles)
       fs.writeFile(`data/${args[4]}`, finalJsonResult, (err) => {
         if(err) {
           console.error(err)
