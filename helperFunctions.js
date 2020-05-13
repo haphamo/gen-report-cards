@@ -47,8 +47,8 @@ const calculateCourseAverages = (allTestsByCourses, readCsvFiles) => {
   const dataObjToArr = Object.entries(allTestsByCourses);
 
   dataObjToArr.map(async course => {
-    console.log('course: ', course[1].length)
-    console.log(readCsvFiles.allCourses[course[0]].numOfTests)
+    // checks if number of tests written for a course matches the total number of tests for a course
+    // if student has written all tests for a course, function proceeds to calculate the course avg
     if(course[1].length === readCsvFiles.allCourses[course[0]].numOfTests) {
       const courseAverage = course[1].reduce((acc, curr) => acc + curr);
       result.push({
@@ -56,6 +56,7 @@ const calculateCourseAverages = (allTestsByCourses, readCsvFiles) => {
         courseAverage: Number(courseAverage.toFixed(2)),
       });
       console.log("Student has not missed any tests!")
+      // otherwise the student receives a 0 if they have missed a test
     } else {
       result.push({
         id: Number(course[0]),
