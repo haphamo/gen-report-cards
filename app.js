@@ -78,12 +78,12 @@ const addCourseIdAndWeightToMarks = function(allMarks, allTests) {
 }
 
 async function test() {
-  const resultOne = await readAllMarks()
-  const resultTwo = await getAllTests()
-  const final = addCourseIdAndWeightToMarks(resultOne, resultTwo)
-  console.log(final)
-  const stringify = JSON.stringify(final)
-  fs.writeFile('data/output.json', stringify, err => {
+  const allMarks = await readAllMarks()
+  const allTests = await getAllTests()
+  const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests)
+  // console.log(marksWithCourseIdAndWeight)
+  const stringified = JSON.stringify(marksWithCourseIdAndWeight)
+  fs.writeFile('data/output.json', stringified, err => {
     if(err) {
       console.error(err)
     }
@@ -113,7 +113,116 @@ const fixture = [
   { test_id: 7, student_id: 3, mark: 40, course_id: 3, weight: 10 }
 ]
 
+const fixture2 = [
+  { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
+  { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
+  { test_id: 3, student_id: 1, mark: 95, course_id: 1, weight: 50 },
+  { test_id: 4, student_id: 1, mark: 32, course_id: 2, weight: 40 },
+  { test_id: 5, student_id: 1, mark: 65, course_id: 2, weight: 60 },
+  { test_id: 6, student_id: 1, mark: 78, course_id: 3, weight: 90 },
+  { test_id: 7, student_id: 1, mark: 40, course_id: 3, weight: 10 }
+]
 
+/*
+oraganizes test by SI
+const result = {
+  1:[
+      { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
+      { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
+      { test_id: 3, student_id: 1, mark: 95, course_id: 1, weight: 50 },
+      { test_id: 4, student_id: 1, mark: 32, course_id: 2, weight: 40 },
+      { test_id: 5, student_id: 1, mark: 65, course_id: 2, weight: 60 },
+      { test_id: 6, student_id: 1, mark: 78, course_id: 3, weight: 90 },
+      { test_id: 7, student_id: 1, mark: 40, course_id: 3, weight: 10 },
+    ],
+  2:[
+      { test_id: 1, student_id: 2, mark: 78, course_id: 1, weight: 10 },
+      { test_id: 2, student_id: 2, mark: 87, course_id: 1, weight: 40 },
+      { test_id: 3, student_id: 2, mark: 15, course_id: 1, weight: 50 },
+      { test_id: 6, student_id: 2, mark: 78, course_id: 3, weight: 90 },
+      { test_id: 7, student_id: 2, mark: 40, course_id: 3, weight: 10 },
+    ]
+}
+org marks*weight by courseID
+const resultTwo = {
+  1: {
+    1:[87, 67, 83],
+    2:[91, 67, 86]
+  },
+  2: {
+    1:[67, 88],
+    2:[87, 56]
+  }
+}
+calc course avg
+const resultThree = {
+  1: {
+    1: 45
+    2: 45
+  },
+  2: {
+    1: 67,
+    2: 56
+  }
+}
+change format
+const resultFour = {
+  1: [
+    {course_id: 1, courseAvg: 45},
+    {course_id: 2, courseAvg: 45}
+  ],
+  2: [
+    {course_id: 1, courseAvg: 76},
+    {course_id: 2, courseAvg: 76}
+  ]
+}
+
+Five: Add add courseName and teahcer
+Six: calculate total AVG and place into setUPJSON
+*/
+
+
+const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
+  // this function returns an object the student id as keys, the values is a collection of course id with the marks for the course
+  const result = {}
+  marksWithCourseIdAndWeight.map(mark => {
+    if(!result[mark.student_id]) {
+      // if the student id doesn't exist in result create one with the mark
+      result[mark.student_id] = {[`${mark.course_id}`]: [mark]}
+    } else {
+      // if the student id exists, check to see if the course enrolled exists othewise create one
+      if(!result[mark.student_id][mark.course_id]) {
+        result[mark.student_id][mark.course_id] = [mark]
+      } else {
+        result[mark.student_id][mark.course_id].push(mark)
+      }
+    }
+  })
+  return result
+}
+
+console.log(marksOfEachStudentByCourseId(fixture))
+
+
+const groupTestsByCourse = () => {
+  // can check if there are missing tests !
+  const result = {}
+
+  studentOneTests.map(test => {
+    if(!result[test.course_id]) {
+      result[test.course_id] = [parseInt(test.mark) * (parseInt(test.weight) / 100)]
+      // result[test.course_id] = [{test_id: test.test_id, mark: test.mark, weight: test.weight}]
+    } else {
+      result[test.course_id].push(parseInt(test.mark) * (parseInt(test.weight) / 100))
+      // result[test.course_id].push({test_id: test.test_id, mark: test.mark, weight: test.weight})
+    }
+  })
+  return result;
+}
+
+// groupTestsByCourse()
+
+// create a courses read promise
 test()
 // console.log(addCourseIdAndWeightToMarks(fix1, fix2))
 
