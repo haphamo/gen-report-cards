@@ -101,7 +101,6 @@ const readStudentDataAndSetUpFinalJsonStructure = (
 
 // reads the marks.csv to push marks data into an array
 const readMarks = (readCsvFiles, markRowFromCsv) => {
-  // console.log('marks: ', markRowFromCsv)
   if(Object.keys(markRowFromCsv).length > 0) {
     readCsvFiles.allMarks.push({
       test_id: parseInt(markRowFromCsv.test_id),
@@ -134,15 +133,20 @@ const readCourses = (readCsvFiles, coursesRowFromCsv) => {
   }
 }
 
-const checkMissingTests = function(readCsvFiles) {
-  readCsvFiles.allTests.map(test => {
-    readCsvFiles.allCourses[test.course_id].numOfTests += 1
-  })
+const totalNumOfTestsForEachCourse = function(readCsvFiles) {
+  if(!readCsvFiles.allTests) {
+    console.log("Input Data is missing test info.")
+  } else {
+    readCsvFiles.allTests.map(test => {
+      readCsvFiles.allCourses[test.course_id].numOfTests += 1
+    })
+
+  }
 }
 
 // maps through an array of all students to create their report card object
 const generateJsonReportCardForAllStudents = function(readCsvFiles, jsonDataOfStudents) {
-  checkMissingTests(readCsvFiles)
+  totalNumOfTestsForEachCourse(readCsvFiles)
   readCsvFiles.allStudentIds.map(function(student) {
     // this variable creates an array of all tests written each student in the students.csv
     const allTestsWrittenByEachStudent = filterMarks(student.id, readCsvFiles);
@@ -187,11 +191,17 @@ const checkSumOfAllCourseWeights = function(readCsvFiles) {
 }
 
 module.exports = {
+  calculateStudentAverage,
+  filterMarks,
+  addCourseWeightAndCourseId,
+  calculateCourseAverages,
+  totalNumOfTestsForEachCourse,
   addCourseWeightAndCourseId,
   readStudentDataAndSetUpFinalJsonStructure,
   readMarks,
   readTests,
   readCourses,
   generateJsonReportCardForAllStudents,
-  checkSumOfAllCourseWeights
+  checkSumOfAllCourseWeights,
+  calculateAllMarksForEachCourse
 };
