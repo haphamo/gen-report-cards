@@ -188,39 +188,22 @@ const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
   marksWithCourseIdAndWeight.map(mark => {
     if(!result[mark.student_id]) {
       // if the student id doesn't exist in result create one with the mark
-      result[mark.student_id] = {[`${mark.course_id}`]: [mark]}
+      result[mark.student_id] = {[`${mark.course_id}`]: [parseInt(mark.mark) * (parseInt(mark.weight) / 100)]}
     } else {
-      // if the student id exists, check to see if the course enrolled exists othewise create one
+      // when the student id exists, check to see if the course enrolled exists othewise create one
       if(!result[mark.student_id][mark.course_id]) {
-        result[mark.student_id][mark.course_id] = [mark]
+        result[mark.student_id][mark.course_id] = [parseInt(mark.mark) * (parseInt(mark.weight) / 100)]
       } else {
-        result[mark.student_id][mark.course_id].push(mark)
+        result[mark.student_id][mark.course_id].push(parseInt(mark.mark) * (parseInt(mark.weight) / 100))
       }
     }
   })
   return result
 }
 
-console.log(marksOfEachStudentByCourseId(fixture))
-
-
-const groupTestsByCourse = () => {
-  // can check if there are missing tests !
-  const result = {}
-
-  studentOneTests.map(test => {
-    if(!result[test.course_id]) {
-      result[test.course_id] = [parseInt(test.mark) * (parseInt(test.weight) / 100)]
-      // result[test.course_id] = [{test_id: test.test_id, mark: test.mark, weight: test.weight}]
-    } else {
-      result[test.course_id].push(parseInt(test.mark) * (parseInt(test.weight) / 100))
-      // result[test.course_id].push({test_id: test.test_id, mark: test.mark, weight: test.weight})
-    }
-  })
-  return result;
-}
-
-// groupTestsByCourse()
+const marksCollection = marksOfEachStudentByCourseId(fixture)
+console.log(marksCollection)
+// console.log(Object.entries(marksCollection))
 
 // create a courses read promise
 test()
