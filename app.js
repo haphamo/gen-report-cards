@@ -77,111 +77,6 @@ const addCourseIdAndWeightToMarks = function(allMarks, allTests) {
   return allMarks
 }
 
-async function test() {
-  const allMarks = await readAllMarks()
-  const allTests = await getAllTests()
-  const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests)
-  // console.log(marksWithCourseIdAndWeight)
-  const stringified = JSON.stringify(marksWithCourseIdAndWeight)
-  fs.writeFile('data/output.json', stringified, err => {
-    if(err) {
-      console.error(err)
-    }
-    console.log("Finished!")
-  })
-}
-
-const fixture = [
-  { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
-  { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
-  { test_id: 3, student_id: 1, mark: 95, course_id: 1, weight: 50 },
-  { test_id: 4, student_id: 1, mark: 32, course_id: 2, weight: 40 },
-  { test_id: 5, student_id: 1, mark: 65, course_id: 2, weight: 60 },
-  { test_id: 6, student_id: 1, mark: 78, course_id: 3, weight: 90 },
-  { test_id: 7, student_id: 1, mark: 40, course_id: 3, weight: 10 },
-  { test_id: 1, student_id: 2, mark: 78, course_id: 1, weight: 10 },
-  { test_id: 2, student_id: 2, mark: 87, course_id: 1, weight: 40 },
-  { test_id: 3, student_id: 2, mark: 15, course_id: 1, weight: 50 },
-  { test_id: 6, student_id: 2, mark: 78, course_id: 3, weight: 90 },
-  { test_id: 7, student_id: 2, mark: 40, course_id: 3, weight: 10 },
-  { test_id: 1, student_id: 3, mark: 78, course_id: 1, weight: 10 },
-  { test_id: 2, student_id: 3, mark: 87, course_id: 1, weight: 40 },
-  { test_id: 3, student_id: 3, mark: 95, course_id: 1, weight: 50 },
-  { test_id: 4, student_id: 3, mark: 32, course_id: 2, weight: 40 },
-  { test_id: 5, student_id: 3, mark: 65, course_id: 2, weight: 60 },
-  { test_id: 6, student_id: 3, mark: 78, course_id: 3, weight: 90 },
-  { test_id: 7, student_id: 3, mark: 40, course_id: 3, weight: 10 }
-]
-
-const fixture2 = [
-  { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
-  { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
-  { test_id: 3, student_id: 1, mark: 95, course_id: 1, weight: 50 },
-  { test_id: 4, student_id: 1, mark: 32, course_id: 2, weight: 40 },
-  { test_id: 5, student_id: 1, mark: 65, course_id: 2, weight: 60 },
-  { test_id: 6, student_id: 1, mark: 78, course_id: 3, weight: 90 },
-  { test_id: 7, student_id: 1, mark: 40, course_id: 3, weight: 10 }
-]
-
-/*
-oraganizes test by SI
-const result = {
-  1:[
-      { test_id: 1, student_id: 1, mark: 78, course_id: 1, weight: 10 },
-      { test_id: 2, student_id: 1, mark: 87, course_id: 1, weight: 40 },
-      { test_id: 3, student_id: 1, mark: 95, course_id: 1, weight: 50 },
-      { test_id: 4, student_id: 1, mark: 32, course_id: 2, weight: 40 },
-      { test_id: 5, student_id: 1, mark: 65, course_id: 2, weight: 60 },
-      { test_id: 6, student_id: 1, mark: 78, course_id: 3, weight: 90 },
-      { test_id: 7, student_id: 1, mark: 40, course_id: 3, weight: 10 },
-    ],
-  2:[
-      { test_id: 1, student_id: 2, mark: 78, course_id: 1, weight: 10 },
-      { test_id: 2, student_id: 2, mark: 87, course_id: 1, weight: 40 },
-      { test_id: 3, student_id: 2, mark: 15, course_id: 1, weight: 50 },
-      { test_id: 6, student_id: 2, mark: 78, course_id: 3, weight: 90 },
-      { test_id: 7, student_id: 2, mark: 40, course_id: 3, weight: 10 },
-    ]
-}
-org marks*weight by courseID
-const resultTwo = {
-  1: {
-    1:[87, 67, 83],
-    2:[91, 67, 86]
-  },
-  2: {
-    1:[67, 88],
-    2:[87, 56]
-  }
-}
-calc course avg
-const resultThree = {
-  1: {
-    1: 45
-    2: 45
-  },
-  2: {
-    1: 67,
-    2: 56
-  }
-}
-change format
-const resultFour = {
-  1: [
-    {course_id: 1, courseAvg: 45},
-    {course_id: 2, courseAvg: 45}
-  ],
-  2: [
-    {course_id: 1, courseAvg: 76},
-    {course_id: 2, courseAvg: 76}
-  ]
-}
-
-Five: Add add courseName and teahcer
-Six: calculate total AVG and place into setUPJSON
-*/
-
-
 const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
   // this function returns an object the student id as keys, the values is a collection of course id with the marks for the course
   const result = {}
@@ -202,20 +97,51 @@ const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
 }
 
 const marksCollection = marksOfEachStudentByCourseId(fixture)
-console.log(marksCollection)
-// console.log(Object.entries(marksCollection))
 
+const calculateAllCourseAvgsForEveryStudent = function(data) {
+  // give student a zero if they've missed a test
+  // receives the result from marksOfEachStudentByCourseId
+  // read course data and add teacher and name
+  const allStudentsWithCourseAvgs = {}
+  for(let [studentId, courses] of Object.entries(data)) {
+    for(let [course, grades] of Object.entries(courses)) {
+      const courseAvg = grades.reduce((prev, curr) => prev + curr, 0)
+      const courseAveToTwoDecimal = parseFloat(courseAvg.toFixed(2))
+      // console.log(`Courses enrolled in ${course}, with a avg of ${parseFloat(courseAvg.toFixed(2))}`)
+      if(!allStudentsWithCourseAvgs[studentId]) {
+        allStudentsWithCourseAvgs[studentId] = [{[`${course}`]: courseAveToTwoDecimal}]
+      } else {
+        allStudentsWithCourseAvgs[studentId].push({[`${course}`]: courseAveToTwoDecimal})
+      } 
+    }
+  }
+  return allStudentsWithCourseAvgs
+}
+
+// console.log(calculateAllCourseAvgsForEveryStudent(marksCollection))
 // create a courses read promise
-test()
-// console.log(addCourseIdAndWeightToMarks(fix1, fix2))
+async function final() {
+  const allMarks = await readAllMarks()
+  const allTests = await getAllTests()
+  const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests)
+  const first = marksOfEachStudentByCourseId(marksWithCourseIdAndWeight)
+  const second = calculateAllCourseAvgsForEveryStudent(first)
+  // console.log(second)
+  const stringified = JSON.stringify(second)
+  fs.writeFile('data/output.json', stringified, err => {
+    if(err) {
+      console.error(err)
+    }
+    console.log("Finished!")
+  })
+}
+
+final()
 
 // setUpFinalJsonWithStudents(readStudentsStream).then(resolve => console.log(resolve))
 
-
-
 // getAllTests().then(res => console.log(res))
 // execute test read then pass result into allMarks
-
 
 /////////////////////////////////////////////////////
 
