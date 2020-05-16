@@ -15,13 +15,12 @@ const readCsvFiles = {
   allMarks: [],
   allTests: []
 }
-
-const readStudentsStream = fs.createReadStream('data/students.csv')
-
-const setUpFinalJsonWithStudents = function(stream) {
+/////////////////////////
+const readAllStudentsAndSetUpFinalJson = function() {
   return new Promise(function(resolve, reject) {
     const result = {students:[]}
-    stream.pipe(csv())
+    fs.createReadStream('data/students.csv')
+    .pipe(csv())
     .on('data', row => {
       // handles empty lines
       if(Object.keys(row).length > 0) {
@@ -34,12 +33,9 @@ const setUpFinalJsonWithStudents = function(stream) {
   })
 }
 
-// from the students ids in result, find all the test written by a student
-// add course id and weight for each mark
 const readAllMarks = function() {
   return new Promise(function(resolve, reject) {
     const allMarks = []
-    
     fs.createReadStream('data/marks.csv')
     .pipe(csv())
     .on('data', row => {
@@ -54,7 +50,7 @@ const readAllMarks = function() {
   })
 }
 
-const getAllTests = function() {
+const readAllTests = function() {
   return new Promise(function(resolve, reject) {
     const allTests = {}
     fs.createReadStream('data/tests.csv')
@@ -96,38 +92,54 @@ const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
   return result
 }
 
-const marksCollection = marksOfEachStudentByCourseId(fixture)
-
-const calculateAllCourseAvgsForEveryStudent = function(data) {
+const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, allCourses) {
   // give student a zero if they've missed a test
   // receives the result from marksOfEachStudentByCourseId
   // read course data and add teacher and name
   const allStudentsWithCourseAvgs = {}
-  for(let [studentId, courses] of Object.entries(data)) {
+
+  for(let [studentId, courses] of Object.entries(objOfStudentsWithMarks)) {
     for(let [course, grades] of Object.entries(courses)) {
       const courseAvg = grades.reduce((prev, curr) => prev + curr, 0)
       const courseAveToTwoDecimal = parseFloat(courseAvg.toFixed(2))
       // console.log(`Courses enrolled in ${course}, with a avg of ${parseFloat(courseAvg.toFixed(2))}`)
       if(!allStudentsWithCourseAvgs[studentId]) {
-        allStudentsWithCourseAvgs[studentId] = [{[`${course}`]: courseAveToTwoDecimal}]
+        allStudentsWithCourseAvgs[studentId] = [{[`${course}`]: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher}]
       } else {
-        allStudentsWithCourseAvgs[studentId].push({[`${course}`]: courseAveToTwoDecimal})
+        allStudentsWithCourseAvgs[studentId].push({[`${course}`]: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher})
       } 
     }
   }
+  console.log(allStudentsWithCourseAvgs)
   return allStudentsWithCourseAvgs
 }
 
-// console.log(calculateAllCourseAvgsForEveryStudent(marksCollection))
-// create a courses read promise
+const readAllCourses = function() {
+  return new Promise((resolve, reject) => {
+    const allCourses = {}
+    fs.createReadStream('data/courses.csv')
+    .pipe(csv())
+    .on('data', row => {
+      allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher}
+    })
+    .on('end', () => resolve(allCourses))
+    .on('error', error => reject(new Error(`Error: ${error}`)))
+  })
+}
+
 async function final() {
   const allMarks = await readAllMarks()
-  const allTests = await getAllTests()
+  const allTests = await readAllTests()
+  const allCourses = await readAllCourses()
+
   const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests)
-  const first = marksOfEachStudentByCourseId(marksWithCourseIdAndWeight)
-  const second = calculateAllCourseAvgsForEveryStudent(first)
-  // console.log(second)
-  const stringified = JSON.stringify(second)
+
+  const organizedMarks = marksOfEachStudentByCourseId(marksWithCourseIdAndWeight)
+  
+  const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, allCourses)
+  // console.log(studentDataWithTheirCourseAvgs)
+  const stringified = JSON.stringify(studentDataWithTheirCourseAvgs)
+
   fs.writeFile('data/output.json', stringified, err => {
     if(err) {
       console.error(err)
@@ -138,8 +150,8 @@ async function final() {
 
 final()
 
-// setUpFinalJsonWithStudents(readStudentsStream).then(resolve => console.log(resolve))
-
+// readAllStudentsAndSetUpFinalJson(readStudentsStream).then(resolve => console.log(resolve))
+// need to add courses
 // getAllTests().then(res => console.log(res))
 // execute test read then pass result into allMarks
 
