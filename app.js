@@ -31,7 +31,7 @@ const readAllStudentsAndSetUpFinalJson = function() {
     .on('end', () => resolve(result))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
-}
+};
 
 const readAllMarks = function() {
   return new Promise(function(resolve, reject) {
@@ -48,7 +48,7 @@ const readAllMarks = function() {
     .on('end', () => resolve(allMarks))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
-}
+};
 
 const readAllTests = function() {
   return new Promise(function(resolve, reject) {
@@ -63,7 +63,7 @@ const readAllTests = function() {
     .on('end', () => resolve(allTests))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
-}
+};
 
 const addCourseIdAndWeightToMarks = function(allMarks, allTests) {
   allMarks.map(mark => {
@@ -71,7 +71,7 @@ const addCourseIdAndWeightToMarks = function(allMarks, allTests) {
     mark.weight = allTests[mark.test_id].weight
   })
   return allMarks
-}
+};
 
 const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
   // this function returns an object the student id as keys, the values is a collection of course id with the marks for the course
@@ -90,27 +90,7 @@ const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
     }
   })
   return result
-}
-
-// {
-//   '1': [
-//           { id: 1, courseAvg: 90.1, name: 'Biology', teacher: 'Mr. D' },
-//           { id: 2, courseAvg: 51.8, name: 'History', teacher: ' Mrs. P' },
-//           { id: 3, courseAvg: 74.2, name: 'Math', teacher: ' Mrs. C' }
-//         ]
-      
-//   },
-//   '2': [
-//     { '1': 50.1, name: 'Biology', teacher: 'Mr. D' },
-//     { '3': 74.2, name: 'Math', teacher: ' Mrs. C' }
-//   ],
-//   '3': [
-//     { '1': 90.1, name: 'Biology', teacher: 'Mr. D' },
-//     { '2': 51.8, name: 'History', teacher: ' Mrs. P' },
-//     { '3': 74.2, name: 'Math', teacher: ' Mrs. C' }
-//   ]
-// }
-
+};
 
 const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, allCourses) {
   // give student a zero if they've missed a test
@@ -122,7 +102,7 @@ const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, a
     for(let [course, grades] of Object.entries(courses)) {
       const courseAvg = grades.reduce((prev, curr) => prev + curr, 0)
       const courseAveToTwoDecimal = parseFloat(courseAvg.toFixed(2))
-      // console.log(`Courses enrolled in ${course}, with a avg of ${parseFloat(courseAvg.toFixed(2))}`)
+
       if(!allStudentsWithCourseAvgs[studentId]) {
         allStudentsWithCourseAvgs[studentId] = [{id: parseInt(allCourses[course].id), courseAverage: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher}]
       } else {
@@ -130,9 +110,8 @@ const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, a
       } 
     }
   }
-  console.log(allStudentsWithCourseAvgs)
   return allStudentsWithCourseAvgs
-}
+};
 
 const readAllCourses = function() {
   return new Promise((resolve, reject) => {
@@ -145,33 +124,53 @@ const readAllCourses = function() {
     .on('end', () => resolve(allCourses))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
-}
+};
 
-async function final() {
-  const allMarks = await readAllMarks()
-  const allTests = await readAllTests()
-  const allCourses = await readAllCourses()
+const fixture1 = {
+  '1': { test_id: 1, course_id: 1, weight: 10 },
+  '2': { test_id: 2, course_id: 1, weight: 40 },
+  '3': { test_id: 3, course_id: 1, weight: 50 },
+  '4': { test_id: 4, course_id: 2, weight: 40 },
+  '5': { test_id: 5, course_id: 2, weight: 60 },
+  '6': { test_id: 6, course_id: 3, weight: 90 },
+  '7': { test_id: 7, course_id: 3, weight: 10 }
+};
 
-  const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests)
+const fixture2 =  {
+  '1': { id: '1', name: 'Biology', teacher: 'Mr. D' },
+  '2': { id: '2', name: 'History', teacher: ' Mrs. P' },
+  '3': { id: '3', name: 'Math', teacher: ' Mrs. C' }
+};
 
-  const organizedMarks = marksOfEachStudentByCourseId(marksWithCourseIdAndWeight)
-  
-  const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, allCourses)
-  // console.log(studentDataWithTheirCourseAvgs)
-  const stringified = JSON.stringify(studentDataWithTheirCourseAvgs)
+// (function Name() {
+//   console.log('here');
+// })();
+
+(async function final() {
+  const allMarks = await readAllMarks();
+  const allTests = await readAllTests();
+  const allCourses = await readAllCourses();
+  // need to map through tests to add the numbre or tests in each course
+
+  const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests);
+
+  const organizedMarks = marksOfEachStudentByCourseId(marksWithCourseIdAndWeight);
+ 
+  const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, allCourses);
+
+  const stringified = JSON.stringify(studentDataWithTheirCourseAvgs);
 
   fs.writeFile('data/output.json', stringified, err => {
     if(err) {
-      console.error(err)
+      console.error(err);
     }
-    console.log("Finished!")
-  })
-}
+    console.log("Finished!");
+  });
+})();
 
-final()
 
 // readAllStudentsAndSetUpFinalJson(readStudentsStream).then(resolve => console.log(resolve))
-// need to add courses
+
 // getAllTests().then(res => console.log(res))
 // execute test read then pass result into allMarks
 
