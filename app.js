@@ -92,6 +92,26 @@ const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
   return result
 }
 
+// {
+//   '1': [
+//           { id: 1, courseAvg: 90.1, name: 'Biology', teacher: 'Mr. D' },
+//           { id: 2, courseAvg: 51.8, name: 'History', teacher: ' Mrs. P' },
+//           { id: 3, courseAvg: 74.2, name: 'Math', teacher: ' Mrs. C' }
+//         ]
+      
+//   },
+//   '2': [
+//     { '1': 50.1, name: 'Biology', teacher: 'Mr. D' },
+//     { '3': 74.2, name: 'Math', teacher: ' Mrs. C' }
+//   ],
+//   '3': [
+//     { '1': 90.1, name: 'Biology', teacher: 'Mr. D' },
+//     { '2': 51.8, name: 'History', teacher: ' Mrs. P' },
+//     { '3': 74.2, name: 'Math', teacher: ' Mrs. C' }
+//   ]
+// }
+
+
 const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, allCourses) {
   // give student a zero if they've missed a test
   // receives the result from marksOfEachStudentByCourseId
@@ -104,9 +124,9 @@ const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, a
       const courseAveToTwoDecimal = parseFloat(courseAvg.toFixed(2))
       // console.log(`Courses enrolled in ${course}, with a avg of ${parseFloat(courseAvg.toFixed(2))}`)
       if(!allStudentsWithCourseAvgs[studentId]) {
-        allStudentsWithCourseAvgs[studentId] = [{[`${course}`]: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher}]
+        allStudentsWithCourseAvgs[studentId] = [{id: parseInt(allCourses[course].id), courseAverage: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher}]
       } else {
-        allStudentsWithCourseAvgs[studentId].push({[`${course}`]: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher})
+        allStudentsWithCourseAvgs[studentId].push({ id: parseInt(allCourses[course].id), courseAverage: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher, })
       } 
     }
   }
