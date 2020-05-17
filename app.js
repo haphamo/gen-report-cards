@@ -92,11 +92,7 @@ const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, a
     for(let [course, grades] of Object.entries(courses)) {
       let courseAvg;
       // compares the course's number of tests to the tests array length and gives the students a course avg of 0 if they've missed a test
-      if(grades.length < allCourses[course].numberOfTests) {
-        courseAvg = 0
-      } else {
-        courseAvg = grades.reduce((prev, curr) => prev + curr, 0)
-      }
+      (grades.length < allCourses[course].numberOfTests) ? courseAvg = 0 : courseAvg = grades.reduce((prev, curr) => prev + curr, 0);
       
       const courseAveToTwoDecimal = parseFloat(courseAvg.toFixed(2))
       
