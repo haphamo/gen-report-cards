@@ -142,22 +142,24 @@ const fixture2 =  {
   '3': { id: '3', name: 'Math', teacher: ' Mrs. C' }
 };
 
-// (function Name() {
-//   console.log('here');
-// })();
+(function numOfTests() {
+  console.log("here");
+})();
 
 (async function final() {
-  const allMarks = await readAllMarks();
-  const allTests = await readAllTests();
-  const allCourses = await readAllCourses();
-  // need to map through tests to add the numbre or tests in each course
-
+  // array of mark data from marks.csv
+  const allMarks = await readAllMarks(); 
+  // obj with test id's as keys and the course & weight as its value, data taken from tests.csv
+  const allTests = await readAllTests(); 
+  // obj with course id as keys and the name and teacher as it's value, data from courses.csv
+  const allCourses = await readAllCourses(); 
+  // array of mark data which includes the course id and weight, this is to set up the calc
   const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests);
-
+  // the marks are calculated to include their weight and sorted by course and then by student id
   const organizedMarks = marksOfEachStudentByCourseId(marksWithCourseIdAndWeight);
- 
+  // course avgs are calculated for each student resulting in an object with the student id as keys and its value is an array of the courses enrolled with their course average
   const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, allCourses);
-
+  
   const stringified = JSON.stringify(studentDataWithTheirCourseAvgs);
 
   fs.writeFile('data/output.json', stringified, err => {
