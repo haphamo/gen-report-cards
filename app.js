@@ -84,23 +84,31 @@ const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
 };
 
 const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, allCourses) {
-  // give student a zero if they've missed a test
+  
   // receives the result from marksOfEachStudentByCourseId
   // read course data and add teacher and name
   const allStudentsWithCourseAvgs = {}
-
   for(let [studentId, courses] of Object.entries(objOfStudentsWithMarks)) {
     for(let [course, grades] of Object.entries(courses)) {
-      const courseAvg = grades.reduce((prev, curr) => prev + curr, 0)
+      let courseAvg;
+      // compares the course's number of tests to the tests array length and gives the students a course avg of 0 if they've missed a test
+      if(grades.length < allCourses[course].numberOfTests) {
+        courseAvg = 0
+      } else {
+        courseAvg = grades.reduce((prev, curr) => prev + curr, 0)
+      }
+      
       const courseAveToTwoDecimal = parseFloat(courseAvg.toFixed(2))
-
+      
       if(!allStudentsWithCourseAvgs[studentId]) {
+
         allStudentsWithCourseAvgs[studentId] = [{id: parseInt(allCourses[course].id), courseAverage: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher}]
       } else {
         allStudentsWithCourseAvgs[studentId].push({ id: parseInt(allCourses[course].id), courseAverage: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher, })
       } 
     }
   }
+  console.log(allStudentsWithCourseAvgs)
   return allStudentsWithCourseAvgs
 };
 
