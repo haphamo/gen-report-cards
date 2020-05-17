@@ -4,18 +4,7 @@ const args = process.argv.slice(2);
 const csvFast = require('fast-csv');
 const { addCourseWeightAndCourseId, readStudentDataAndSetUpFinalJsonStructure, readMarks, readTests, readCourses, generateJsonReportCardForAllStudents, checkSumOfAllCourseWeights } = require('./helperFunctions')
 
-// an obj with student id's as keys and the values are the students marks & avgs
-const jsonDataOfStudents = {};
-// jsonDataOfStudents has to be manipulated to match the stucture JSON end result
-let finalJsonResult = {};
-// where I keep data after reading files, to do caluclations
-const readCsvFiles = {
-  allStudentIds: [],
-  allCourses: {},
-  allMarks: [],
-  allTests: []
-}
-/////////////////////////
+// TO DO: need to sort students by id!
 const readAllStudentsAndSetUpFinalJson = function() {
   return new Promise(function(resolve, reject) {
     const result = {students:[]}
@@ -126,27 +115,10 @@ const readAllCourses = function() {
   })
 };
 
-const fixture1 = {
-  '1': { test_id: 1, course_id: 1, weight: 10 },
-  '2': { test_id: 2, course_id: 1, weight: 40 },
-  '3': { test_id: 3, course_id: 1, weight: 50 },
-  '4': { test_id: 4, course_id: 2, weight: 40 },
-  '5': { test_id: 5, course_id: 2, weight: 60 },
-  '6': { test_id: 6, course_id: 3, weight: 90 },
-  '7': { test_id: 7, course_id: 3, weight: 10 }
-};
-
-const fixture2 =  {
-  '1': { id: '1', name: 'Biology', teacher: 'Mr. D' },
-  '2': { id: '2', name: 'History', teacher: ' Mrs. P' },
-  '3': { id: '3', name: 'Math', teacher: ' Mrs. C' }
-};
-
-(function numOfTests() {
-  console.log("here");
-})();
 
 (async function final() {
+  // reads data from students.csv and sets up final json object
+  const allStudents = await readAllStudentsAndSetUpFinalJson();
   // array of mark data from marks.csv
   const allMarks = await readAllMarks(); 
   // obj with test id's as keys and the course & weight as its value, data taken from tests.csv
@@ -159,8 +131,14 @@ const fixture2 =  {
   const organizedMarks = marksOfEachStudentByCourseId(marksWithCourseIdAndWeight);
   // course avgs are calculated for each student resulting in an object with the student id as keys and its value is an array of the courses enrolled with their course average
   const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, allCourses);
-  
-  const stringified = JSON.stringify(studentDataWithTheirCourseAvgs);
+  // TO DO: calculate their total avg!
+  allStudents.students.map(student => {
+    student.courses = studentDataWithTheirCourseAvgs[student.id]
+  })
+
+  // console.log(allStudents.students[0])
+
+  const stringified = JSON.stringify(allStudents);
 
   fs.writeFile('data/output.json', stringified, err => {
     if(err) {
@@ -169,89 +147,3 @@ const fixture2 =  {
     console.log("Finished!");
   });
 })();
-
-
-// readAllStudentsAndSetUpFinalJson(readStudentsStream).then(resolve => console.log(resolve))
-
-// getAllTests().then(res => console.log(res))
-// execute test read then pass result into allMarks
-
-/////////////////////////////////////////////////////
-
-async function getAllStudents(studentsCsv) {
-  try {
-    fs.createReadStream(`data/${studentsCsv}`)
-      .pipe(csv())
-      .on("data", (row) => {
-        readStudentDataAndSetUpFinalJsonStructure(readCsvFiles, row, jsonDataOfStudents)
-      })
-      .on("end", () => {
-        console.log("Reading Student Data Complete!");
-      })
-  } catch (err) {
-    console.error("Error!");
-  }
-};
-
-async function getAllMarks(marksCsv) {
-  try {
-    fs.createReadStream(`data/${marksCsv}`)
-      .pipe(csv())
-      .on("data", (row) => {
-       readMarks(readCsvFiles, row)
-      })
-      .on("end", (row) => {
-        console.log("Reading Marks Data Complete!")
-      });
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-async function addCourseAndWeightToMarks(testsCsv) {
-  try {
-    fs.createReadStream(`data/${testsCsv}`)
-      .pipe(csv())
-      .on("data", (row) => {
-        readTests(readCsvFiles, row)
-      })
-      .on("end", () => {
-        addCourseWeightAndCourseId(readCsvFiles)
-        console.log("Reading Tests Data Complete!");
-      });
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-// this is the final read and the readCsvFiles obj has all the data required to do calculations
-async function getAllCoursesAndGenerateJson(coursesCsv) {
-  getAllStudents(args[1]);
-  getAllMarks(args[3]);
-  addCourseAndWeightToMarks(args[2]);
-  try {
-    fs.createReadStream(`data/${coursesCsv}`)
-    .pipe(csv())
-    .on("data", (row) => {
-      readCourses(readCsvFiles, row)
-    })
-    .on("end", () => {
-      generateJsonReportCardForAllStudents(readCsvFiles, jsonDataOfStudents)
-      finalJsonResult = JSON.stringify({
-        students: Object.values(jsonDataOfStudents),
-      });
-      console.log("Reading courses data complete! Final JSON is almost ready!")
-      checkSumOfAllCourseWeights(readCsvFiles)
-      fs.writeFile(`data/${args[4]}`, finalJsonResult, (err) => {
-        if(err) {
-          console.error(err)
-        }
-        console.log("Writing Sucessful and Complete!")
-      })
-    })
-  } catch(err) {
-    console.error(err)
-  }
-}
-
-// getAllCoursesAndGenerateJson(args[0])
