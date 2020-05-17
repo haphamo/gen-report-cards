@@ -2,9 +2,9 @@ const fs = require("fs");
 const csv = require("csv-parser");
 const args = process.argv.slice(2);
 const csvFast = require('fast-csv');
-const { addCourseWeightAndCourseId, readStudentDataAndSetUpFinalJsonStructure, readMarks, readTests, readCourses, generateJsonReportCardForAllStudents, checkSumOfAllCourseWeights } = require('./helperFunctions')
 
-// TO DO: need to sort students by id!
+// TO DO: Replace all paths with the command line args
+
 const readAllStudentsAndSetUpFinalJson = function() {
   return new Promise(function(resolve, reject) {
     const result = {students:[]}
@@ -16,6 +16,9 @@ const readAllStudentsAndSetUpFinalJson = function() {
       // added a trim on the row.name, just in case the names have space in them
       result.students.push({id: parseInt(row.id), name: row.name.trim()})
       }
+      // sort students by id
+      result.students.sort((a, b) => a.id - b.id)
+      
     })
     .on('end', () => resolve(result))
     .on('error', error => reject(new Error(`Error: ${error}`)))
