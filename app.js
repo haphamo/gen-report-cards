@@ -4,7 +4,6 @@ const args = process.argv.slice(2);
 const csvFast = require('fast-csv');
 
 // TO DO: Replace all paths with the command line args
-
 const readAllStudentsAndSetUpFinalJson = function() {
   return new Promise(function(resolve, reject) {
     const result = {students:[]}
@@ -111,13 +110,19 @@ const readAllCourses = function() {
     fs.createReadStream('data/courses.csv')
     .pipe(csv())
     .on('data', row => {
-      allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher}
+      allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher, numberOfTests: 0}
     })
     .on('end', () => resolve(allCourses))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
 };
 
+const calcNumberOfTestsPerCourse = function(allCourses, allTests) {
+  Object.values(allTests).map(test => {
+    allCourses[test.course_id].numberOfTests += 1;
+  })
+  return allCourses
+};
 
 (async function final() {
   // reads data from students.csv and sets up final json object
@@ -127,7 +132,9 @@ const readAllCourses = function() {
   // obj with test id's as keys and the course & weight as its value, data taken from tests.csv
   const allTests = await readAllTests(); 
   // obj with course id as keys and the name and teacher as it's value, data from courses.csv
-  const allCourses = await readAllCourses(); 
+  const allCourses = await readAllCourses();
+  // maps through all the tests to find out the number of tests for every course
+  const addedNumberOfTestsPerCourse = calcNumberOfTestsPerCourse(allCourses, allTests)
   // array of mark data which includes the course id and weight, this is to set up the calc
   const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests);
   // the marks are calculated to include their weight and sorted by course and then by student id
@@ -137,9 +144,7 @@ const readAllCourses = function() {
   // TO DO: calculate their total avg!
   allStudents.students.map(student => {
     student.courses = studentDataWithTheirCourseAvgs[student.id]
-  })
-
-  // console.log(allStudents.students[0])
+  });
 
   const stringified = JSON.stringify(allStudents);
 
