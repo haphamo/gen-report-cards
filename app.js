@@ -104,16 +104,23 @@ const readAllCourses = () => (
     fs.createReadStream(`data/${args[0]}`)
     .pipe(csv())
     .on('data', row => {
-      allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher, numberOfTests: 0}
+      allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher, numberOfTests: 0, totalTestWeight: 0}
     })
     .on('end', () => resolve(allCourses))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
 );
 
+// Also checks sum of all course weights! Handle error when total test weights do not add up to 100
 const calcNumberOfTestsPerCourse = (allCourses, allTests) => {
   Object.values(allTests).map(test => {
     allCourses[test.course_id].numberOfTests += 1;
+    allCourses[test.course_id].totalTestWeight += test.weight
+  });
+  Object.values(allCourses).map(course => {
+    if(course.totalTestWeight !== 100) {
+      console.log(new Error('Course weights do not add up to 100!'))
+    }
   })
   return allCourses
 };
@@ -128,9 +135,7 @@ const calculateStudentAvg = (data) => {
   return data
 };
 
-// TO DO: Check sum of all course weights!
-
-(async () => {
+(async function finalJsonOutput() {
   // reads data from students.csv and sets up final json object
   const allStudents = await readAllStudentsAndSetUpFinalJson();
   // array of mark data from marks.csv
