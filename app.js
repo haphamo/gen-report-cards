@@ -3,7 +3,6 @@ const csv = require("csv-parser");
 const args = process.argv.slice(2);
 const csvFast = require('fast-csv');
 
-// TO DO: Replace all paths with the command line args
 const readAllStudentsAndSetUpFinalJson = () => (
   new Promise((resolve, reject) => {
     const result = {students:[]}

@@ -1,32 +1,73 @@
 {
-  "1": [
+  "students": [
     {
-      "1": 90.1
+      "id": 1,
+      "name": "Jenny Nguy",
+      "courses": [
+        {
+          "id": 1,
+          "courseAverage": 90.1,
+          "name": "Biology",
+          "teacher": "Mr. D"
+        },
+        {
+          "id": 2,
+          "courseAverage": 51.8,
+          "name": "History",
+          "teacher": " Mrs. P"
+        },
+        {
+          "id": 3,
+          "courseAverage": 74.2,
+          "name": "Math",
+          "teacher": " Mrs. C"
+        }
+      ],
+      "totalAverage": 72.03
     },
     {
-      "2": 51.8
+      "id": 2,
+      "name": "Tammie Chung",
+      "courses": [
+        {
+          "id": 1,
+          "courseAverage": 50.1,
+          "name": "Biology",
+          "teacher": "Mr. D"
+        },
+        {
+          "id": 3,
+          "courseAverage": 74.2,
+          "name": "Math",
+          "teacher": " Mrs. C"
+        }
+      ],
+      "totalAverage": 62.15
     },
     {
-      "3": 74.2
-    }
-  ],
-  "2": [
-    {
-      "1": 50.1
-    },
-    {
-      "3": 74.2
-    }
-  ],
-  "3": [
-    {
-      "1": 90.1
-    },
-    {
-      "2": 51.8
-    },
-    {
-      "3": 74.2
+      "id": 3,
+      "name": "Tamires Lowande",
+      "courses": [
+        {
+          "id": 1,
+          "courseAverage": 90.1,
+          "name": "Biology",
+          "teacher": "Mr. D"
+        },
+        {
+          "id": 2,
+          "courseAverage": 51.8,
+          "name": "History",
+          "teacher": " Mrs. P"
+        },
+        {
+          "id": 3,
+          "courseAverage": 74.2,
+          "name": "Math",
+          "teacher": " Mrs. C"
+        }
+      ],
+      "totalAverage": 72.03
     }
   ]
 }
