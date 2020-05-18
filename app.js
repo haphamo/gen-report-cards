@@ -7,7 +7,7 @@ const csvFast = require('fast-csv');
 const readAllStudentsAndSetUpFinalJson = function() {
   return new Promise(function(resolve, reject) {
     const result = {students:[]}
-    fs.createReadStream('data/students.csv')
+    fs.createReadStream(`data/${args[1]}`)
     .pipe(csv())
     .on('data', row => {
       // handles empty lines
@@ -26,7 +26,7 @@ const readAllStudentsAndSetUpFinalJson = function() {
 const readAllMarks = function() {
   return new Promise(function(resolve, reject) {
     const allMarks = []
-    fs.createReadStream('data/marks.csv')
+    fs.createReadStream(`data/${args[3]}`)
     .pipe(csv())
     .on('data', row => {
       if(Object.keys(row).length > 0) {
@@ -42,7 +42,7 @@ const readAllMarks = function() {
 const readAllTests = function() {
   return new Promise(function(resolve, reject) {
     const allTests = {}
-    fs.createReadStream('data/tests.csv')
+    fs.createReadStream(`data/${args[2]}`)
     .pipe(csv())
     .on('data', row => {
       if(Object.keys(row).length > 0) {
@@ -103,7 +103,7 @@ const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, a
 const readAllCourses = function() {
   return new Promise((resolve, reject) => {
     const allCourses = {}
-    fs.createReadStream('data/courses.csv')
+    fs.createReadStream(`data/${args[0]}`)
     .pipe(csv())
     .on('data', row => {
       allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher, numberOfTests: 0}
@@ -120,88 +120,15 @@ const calcNumberOfTestsPerCourse = function(allCourses, allTests) {
   return allCourses
 };
 
-const fixture = {
-  "students": [
-    {
-      "id": 1,
-      "name": "Jenny Nguy",
-      "courses": [
-        {
-          "id": 1,
-          "courseAverage": 90.1,
-          "name": "Biology",
-          "teacher": "Mr. D"
-        },
-        {
-          "id": 2,
-          "courseAverage": 51.8,
-          "name": "History",
-          "teacher": " Mrs. P"
-        },
-        {
-          "id": 3,
-          "courseAverage": 74.2,
-          "name": "Math",
-          "teacher": " Mrs. C"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "name": "Tammie Chung",
-      "courses": [
-        {
-          "id": 1,
-          "courseAverage": 50.1,
-          "name": "Biology",
-          "teacher": "Mr. D"
-        },
-        {
-          "id": 3,
-          "courseAverage": 74.2,
-          "name": "Math",
-          "teacher": " Mrs. C"
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "name": "Tamires Lowande",
-      "courses": [
-        {
-          "id": 1,
-          "courseAverage": 90.1,
-          "name": "Biology",
-          "teacher": "Mr. D"
-        },
-        {
-          "id": 2,
-          "courseAverage": 51.8,
-          "name": "History",
-          "teacher": " Mrs. P"
-        },
-        {
-          "id": 3,
-          "courseAverage": 74.2,
-          "name": "Math",
-          "teacher": " Mrs. C"
-        }
-      ]
-    }
-  ]
-};
-
-
-(function calculateStudentAvg (data) {
+function calculateStudentAvg(data) {
   data.students.map(student => {
     const sumOfCourseAvgs = student.courses.reduce((prev, curr) => prev + curr.courseAverage, 0)
     const numberOfEnrolledCourses = student.courses.length
     const totalAvg = parseFloat((sumOfCourseAvgs / numberOfEnrolledCourses).toFixed(2))
     student.totalAverage = totalAvg
-    // console.log(student)
   })
-  console.log(data)
-})(fixture);
+  return data
+};
 
 // TO DO: Check sum of all course weights!
 
@@ -222,16 +149,16 @@ const fixture = {
   const organizedMarks = marksOfEachStudentByCourseId(marksWithCourseIdAndWeight);
   // course avgs are calculated for each student resulting in an object with the student id as keys and its value is an array of the courses enrolled with their course average
   const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, allCourses);
-  
-  allStudents.students.map(student => {
+  // adds the courses enrolled with course avgs for all students
+  await allStudents.students.map(student => {
     student.courses = studentDataWithTheirCourseAvgs[student.id]
   });
-  // TO DO: calculate their total avg!
+  // adds totalAverage key to each student
+  const calculatedTotalAvg = calculateStudentAvg(allStudents)
 
-  // console.log(studentDataWithTheirCourseAvgs)
   const stringified = JSON.stringify(allStudents);
 
-  fs.writeFile('data/output.json', stringified, err => {
+  fs.writeFile(`data/${args[4]}`, stringified, err => {
     if(err) {
       console.error(err);
     }
