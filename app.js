@@ -4,8 +4,8 @@ const args = process.argv.slice(2);
 const csvFast = require('fast-csv');
 
 // TO DO: Replace all paths with the command line args
-const readAllStudentsAndSetUpFinalJson = function() {
-  return new Promise(function(resolve, reject) {
+const readAllStudentsAndSetUpFinalJson = () => (
+  new Promise((resolve, reject) => {
     const result = {students:[]}
     fs.createReadStream(`data/${args[1]}`)
     .pipe(csv())
@@ -21,10 +21,10 @@ const readAllStudentsAndSetUpFinalJson = function() {
     .on('end', () => resolve(result))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
-};
+);
 
-const readAllMarks = function() {
-  return new Promise(function(resolve, reject) {
+const readAllMarks = () => (
+  new Promise((resolve, reject) => {
     const allMarks = []
     fs.createReadStream(`data/${args[3]}`)
     .pipe(csv())
@@ -37,10 +37,10 @@ const readAllMarks = function() {
     .on('end', () => resolve(allMarks))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
-};
+);
 
-const readAllTests = function() {
-  return new Promise(function(resolve, reject) {
+const readAllTests = () => (
+  new Promise((resolve, reject) => {
     const allTests = {}
     fs.createReadStream(`data/${args[2]}`)
     .pipe(csv())
@@ -52,9 +52,9 @@ const readAllTests = function() {
     .on('end', () => resolve(allTests))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
-};
+);
 
-const addCourseIdAndWeightToMarks = function(allMarks, allTests) {
+const addCourseIdAndWeightToMarks = (allMarks, allTests) => {
   allMarks.map(mark => {
     mark.course_id = allTests[mark.test_id].course_id
     mark.weight = allTests[mark.test_id].weight
@@ -62,7 +62,7 @@ const addCourseIdAndWeightToMarks = function(allMarks, allTests) {
   return allMarks
 };
 
-const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
+const marksOfEachStudentByCourseId = (marksWithCourseIdAndWeight) => {
   // this function returns an object the student id as keys, the values is a collection of course id with the marks for the course
   const result = {}
   marksWithCourseIdAndWeight.map(mark => {
@@ -81,7 +81,7 @@ const marksOfEachStudentByCourseId = function(marksWithCourseIdAndWeight) {
   return result
 };
 
-const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, allCourses) {
+const calculateAllCourseAvgsForEveryStudent = (objOfStudentsWithMarks, allCourses) => {
   const allStudentsWithCourseAvgs = {}
   for(let [studentId, courses] of Object.entries(objOfStudentsWithMarks)) {
     for(let [course, grades] of Object.entries(courses)) {
@@ -93,15 +93,15 @@ const calculateAllCourseAvgsForEveryStudent = function(objOfStudentsWithMarks, a
       if(!allStudentsWithCourseAvgs[studentId]) {
         allStudentsWithCourseAvgs[studentId] = [{id: parseInt(allCourses[course].id), courseAverage: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher}]
       } else {
-        allStudentsWithCourseAvgs[studentId].push({ id: parseInt(allCourses[course].id), courseAverage: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher, })
+        allStudentsWithCourseAvgs[studentId].push({ id: parseInt(allCourses[course].id), courseAverage: courseAveToTwoDecimal, name: allCourses[course].name, teacher: allCourses[course].teacher})
       } 
     }
   }
   return allStudentsWithCourseAvgs
 };
 
-const readAllCourses = function() {
-  return new Promise((resolve, reject) => {
+const readAllCourses = () => (
+  new Promise((resolve, reject) => {
     const allCourses = {}
     fs.createReadStream(`data/${args[0]}`)
     .pipe(csv())
@@ -111,16 +111,16 @@ const readAllCourses = function() {
     .on('end', () => resolve(allCourses))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
-};
+);
 
-const calcNumberOfTestsPerCourse = function(allCourses, allTests) {
+const calcNumberOfTestsPerCourse = (allCourses, allTests) => {
   Object.values(allTests).map(test => {
     allCourses[test.course_id].numberOfTests += 1;
   })
   return allCourses
 };
 
-function calculateStudentAvg(data) {
+const calculateStudentAvg = (data) => {
   data.students.map(student => {
     const sumOfCourseAvgs = student.courses.reduce((prev, curr) => prev + curr.courseAverage, 0)
     const numberOfEnrolledCourses = student.courses.length
