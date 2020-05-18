@@ -1,7 +1,6 @@
 const fs = require("fs");
 const csv = require("csv-parser");
 const args = process.argv.slice(2);
-const csvFast = require('fast-csv');
 
 const readAllStudentsAndSetUpFinalJson = () => (
   new Promise((resolve, reject) => {
@@ -131,7 +130,7 @@ const calculateStudentAvg = (data) => {
 
 // TO DO: Check sum of all course weights!
 
-(async function() {
+(async () => {
   // reads data from students.csv and sets up final json object
   const allStudents = await readAllStudentsAndSetUpFinalJson();
   // array of mark data from marks.csv
@@ -141,15 +140,15 @@ const calculateStudentAvg = (data) => {
   // obj with course id as keys and the name and teacher as it's value, data from courses.csv
   const allCourses = await readAllCourses();
   // maps through all the tests to find out the number of tests for every course
-  const addedNumberOfTestsPerCourse = calcNumberOfTestsPerCourse(allCourses, allTests)
+  calcNumberOfTestsPerCourse(allCourses, allTests)
   // array of mark data which includes the course id and weight, this is to set up the calc
   const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests);
   // the marks are calculated to include their weight and sorted by course and then by student id
-  const organizedMarks = marksOfEachStudentByCourseId(marksWithCourseIdAndWeight);
+  const organizedMarks = await marksOfEachStudentByCourseId(marksWithCourseIdAndWeight);
   // course avgs are calculated for each student resulting in an object with the student id as keys and its value is an array of the courses enrolled with their course average
   const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, allCourses);
   // adds the courses enrolled with course avgs for all students
-  await allStudents.students.map(student => {
+  allStudents.students.map(student => {
     student.courses = studentDataWithTheirCourseAvgs[student.id]
   });
   // adds totalAverage key to each student
