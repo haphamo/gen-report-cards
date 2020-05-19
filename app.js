@@ -168,3 +168,15 @@ const calculateStudentAvg = (data) => {
     console.log("Finished!");
   });
 })();
+
+module.exports = {
+  readAllStudentsAndSetUpFinalJson,
+  readAllMarks,
+  readAllTests,
+  readAllCourses,
+  calculateAllCourseAvgsForEveryStudent,
+  addCourseIdAndWeightToMarks,
+  marksOfEachStudentByCourseId,
+  calculateStudentAvg,
+  calcNumberOfTestsPerCourse
+}
