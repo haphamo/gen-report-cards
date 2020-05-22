@@ -135,7 +135,7 @@ const calculateStudentAvg = (data) => {
   return data
 };
 
-(async function finalJsonOutput() {
+async function finalJsonOutput() {
   // reads data from students.csv and sets up final json object
   const allStudents = await readAllStudentsAndSetUpFinalJson();
   // array of mark data from marks.csv
@@ -167,7 +167,7 @@ const calculateStudentAvg = (data) => {
     }
     console.log("Finished!");
   });
-})();
+};
 
 module.exports = {
   readAllStudentsAndSetUpFinalJson,
