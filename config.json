@@ -1,0 +1,4 @@
+{
+  "pre": ["npm install"],
+  "run": "node app.js"
+ }
