@@ -111,6 +111,13 @@ const readAllCourses = () => (
   })
 );
 
+// use __dirname for abs path
+const readCsvData = () => {
+  new Promise((resolve, reject) => {
+
+  })
+}
+
 // Also checks sum of all course weights! Handle error when total test weights do not add up to 100
 const calcNumberOfTestsPerCourse = (allCourses, allTests) => {
   Object.values(allTests).map(test => {
@@ -135,7 +142,7 @@ const calculateStudentAvg = (data) => {
   return data
 };
 
-async function finalJsonOutput() {
+(async function finalJsonOutput() {
   // reads data from students.csv and sets up final json object
   const allStudents = await readAllStudentsAndSetUpFinalJson();
   // array of mark data from marks.csv
@@ -167,7 +174,7 @@ async function finalJsonOutput() {
     }
     console.log("Finished!");
   });
-};
+})();
 
 module.exports = {
   readAllStudentsAndSetUpFinalJson,
