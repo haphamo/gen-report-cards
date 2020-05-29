@@ -125,7 +125,11 @@ const readAllCourses = (arg) => (
         }
       }
     })
-    .on('end', () => resolve(allData))
+    .on('end', () => {
+      // sorts students by student number
+      allData.allStudents.sort((a, b) => a.id - b.id)
+      resolve(allData)
+    })
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
 );
@@ -146,10 +150,14 @@ const readAllCourses = (arg) => (
 
   const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, awaitAllData[0].allCourses);
   
-  awaitAllData[1].allStudents.forEach(student => {
+  awaitAllData[1].allStudents.map(student => {
     student.courses = studentDataWithTheirCourseAvgs[student.id]
   });
-  console.log(awaitAllData[1].allStudents)
+  
+  const calculatedTotalAvg = calculateStudentAvg(awaitAllData[1].allStudents)
+
+  // console.log(awaitAllData[1].allStudents[0].courses)
+
 })(args);
 
 // Also checks sum of all course weights! Handle error when total test weights do not add up to 100
@@ -167,7 +175,8 @@ const calcNumberOfTestsPerCourse = (allCourses, allTests) => {
 };
 
 const calculateStudentAvg = (data) => {
-  data.students.map(student => {
+  // console.log(data)
+  data.map(student => {
     const sumOfCourseAvgs = student.courses.reduce((prev, curr) => prev + curr.courseAverage, 0)
     const numberOfEnrolledCourses = student.courses.length
     const totalAvg = parseFloat((sumOfCourseAvgs / numberOfEnrolledCourses).toFixed(2))
