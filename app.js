@@ -130,32 +130,6 @@ const readAllCourses = (arg) => (
   })
 );
 
-// use __dirname for abs path
-const readCsvData = arg => {
-  // ["courses.csv", "students.csv", "tests.csv", "marks.csv", "output.csv"]
-  console.log(arg)
-    new Promise((resolve, reject) => {
-    const allData = {
-      allCourses: {},
-      allStudents: []
-    }
-    fs.createReadStream(`${__dirname}/data/${arg}`)
-    .pipe(csv())
-    .on('data', row => {
-      if(Object.keys(row).length > 0) {
-        if(arg === 'courses.csv') {
-          allData.allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher, numberOfTests: 0, totalTestWeight: 0}
-        } 
-      }
-    })
-    .on('end', () => {
-      // console.log(allData)
-      resolve(allData)
-      console.log("Finished")
-    })
-    .on('error', error => reject(new Error(`Error: ${error}`)))
-  })
-};
 
 (async function awaitAll(commandLineArgs) {
   // console.log(commandLineArgs)
