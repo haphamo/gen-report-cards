@@ -90,7 +90,7 @@ const readCsvFile = (arg) => (
 );
 
 (async function generateReportCard(commandLineArgs) {
-  // don't want to map through the last item
+  
   const awaitAllData = await Promise.all(commandLineArgs.map(arg => readCsvFile(arg)))
   // destructure
   const [{allCourses}, {allStudents}, {allTests}, {allMarks}] = awaitAllData
