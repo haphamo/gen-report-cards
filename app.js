@@ -62,17 +62,21 @@ const readCsvFile = (arg) => (
     .pipe(csv())
     .on('data', row => {
       if(Object.keys(row).length > 0) {
-        if(arg === 'courses.csv') {
-          allData.allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher, numberOfTests: 0, totalTestWeight: 0}
-        }
-        if(arg === 'students.csv') {
-          allData.allStudents.push({id: parseInt(row.id), name: row.name.trim()})
-        }
-        if(arg === 'tests.csv') {
-          allData.allTests[row.id] = {test_id: parseInt(row.id), course_id: parseInt(row.course_id), weight: parseInt(row.weight)}
-        }
-        if(arg === 'marks.csv') {
-          allData.allMarks.push({test_id: parseInt(row.test_id), student_id: parseInt(row.student_id), mark: parseInt(row.mark)})
+        switch(arg) {
+          case 'courses.csv':
+            allData.allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher, numberOfTests: 0, totalTestWeight: 0}
+            break;
+          case 'students.csv':
+            allData.allStudents.push({id: parseInt(row.id), name: row.name.trim()})
+            break;
+          case 'tests.csv':
+            allData.allTests[row.id] = {test_id: parseInt(row.id), course_id: parseInt(row.course_id), weight: parseInt(row.weight)}
+            break;
+          case 'marks.csv':
+            allData.allMarks.push({test_id: parseInt(row.test_id), student_id: parseInt(row.student_id), mark: parseInt(row.mark)})
+            break;
+          case 'output.json':
+            break;
         }
       }
     })
@@ -131,6 +135,7 @@ const calcNumberOfTestsPerCourse = (allCourses, allTests) => {
 
 const calculateStudentAvg = (data) => {
   data.map(student => {
+    console.log(student)
     const sumOfCourseAvgs = student.courses.reduce((prev, curr) => prev + curr.courseAverage, 0)
     const numberOfEnrolledCourses = student.courses.length
     const totalAvg = parseFloat((sumOfCourseAvgs / numberOfEnrolledCourses).toFixed(2))
