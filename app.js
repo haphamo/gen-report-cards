@@ -49,7 +49,7 @@ const calculateAllCourseAvgsForEveryStudent = (objOfStudentsWithMarks, allCourse
   return allStudentsWithCourseAvgs
 };
 
-// reads the 4 csv files [courses, students, tests, marks] and stores data to be used later
+// reads the 4 csv files [courses, students, tests, marks] and stores data to be used in the generateReportCard function
 const readCsvFile = (arg) => (
   new Promise((resolve, reject) => {
     const allData = {
@@ -87,7 +87,7 @@ const readCsvFile = (arg) => (
 
 (async function generateReportCard(commandLineArgs) {
   // don't want to map through the last item
-  const awaitAllData = await Promise.all(args.map(arg => readCsvFile(arg)))
+  const awaitAllData = await Promise.all(commandLineArgs.map(arg => readCsvFile(arg)))
   // destructure
   const [{allCourses}, {allStudents}, {allTests}, {allMarks}] = awaitAllData
 
