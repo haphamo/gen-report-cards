@@ -130,14 +130,16 @@ const readAllCourses = (arg) => (
   })
 );
 
-
 (async function awaitAll(commandLineArgs) {
   // console.log(commandLineArgs)
   const c = await readAllCourses(commandLineArgs[0])
   const s = await readAllCourses(commandLineArgs[1])
   const t = await readAllCourses(commandLineArgs[2])
   const m = await readAllCourses(commandLineArgs[3])
-  let test = await Promise.all([c, s, t, m])
+  // map
+
+  // let test = await Promise.all([c, s, t, m])
+  let test = await Promise.all(args.map(arg => readAllCourses(arg)))
   // destructure
   // console.log(test)
   console.log(test[0].allCourses)
@@ -145,8 +147,6 @@ const readAllCourses = (arg) => (
   console.log(test[2].allTests)
   console.log(test[3].allMarks)
 })(args);
-
-
 
 // Also checks sum of all course weights! Handle error when total test weights do not add up to 100
 const calcNumberOfTestsPerCourse = (allCourses, allTests) => {
