@@ -138,10 +138,7 @@ const readAllCourses = (arg) => (
   // let test = await Promise.all([c, s, t, m])
   const awaitAllData = await Promise.all(args.map(arg => readAllCourses(arg)))
   // destructure
-  // console.log(awaitAllData[0].allCourses)
-  // console.log(awaitAllData[1].allStudents)
-  // console.log(awaitAllData[2].allTests)
-  // console.log(awaitAllData[3].allMarks)
+
   calcNumberOfTestsPerCourse(awaitAllData[0].allCourses, awaitAllData[2].allTests);
 
   const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(awaitAllData[3].allMarks, awaitAllData[2].allTests);
@@ -156,8 +153,14 @@ const readAllCourses = (arg) => (
   
   const calculatedTotalAvg = calculateStudentAvg(awaitAllData[1].allStudents)
 
-  // console.log(awaitAllData[1].allStudents[0].courses)
+  const stringified = JSON.stringify(awaitAllData[1].allStudents);
 
+  fs.writeFile(`data/${args[4]}`, stringified, err => {
+    if(err) {
+      console.error(err);
+    }
+    console.log("Finished!");
+  });
 })(args);
 
 // Also checks sum of all course weights! Handle error when total test weights do not add up to 100
