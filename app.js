@@ -130,22 +130,26 @@ const readAllCourses = (arg) => (
   })
 );
 
-(async function awaitAll(commandLineArgs) {
-  // console.log(commandLineArgs)
-  const c = await readAllCourses(commandLineArgs[0])
-  const s = await readAllCourses(commandLineArgs[1])
-  const t = await readAllCourses(commandLineArgs[2])
-  const m = await readAllCourses(commandLineArgs[3])
-  // map
-
+(async function generateReportCard(commandLineArgs) {
   // let test = await Promise.all([c, s, t, m])
-  let test = await Promise.all(args.map(arg => readAllCourses(arg)))
+  const awaitAllData = await Promise.all(args.map(arg => readAllCourses(arg)))
   // destructure
-  // console.log(test)
-  console.log(test[0].allCourses)
-  console.log(test[1].allStudents)
-  console.log(test[2].allTests)
-  console.log(test[3].allMarks)
+  // console.log(awaitAllData[0].allCourses)
+  // console.log(awaitAllData[1].allStudents)
+  // console.log(awaitAllData[2].allTests)
+  // console.log(awaitAllData[3].allMarks)
+  calcNumberOfTestsPerCourse(awaitAllData[0].allCourses, awaitAllData[2].allTests);
+
+  const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(awaitAllData[3].allMarks, awaitAllData[2].allTests);
+
+  const organizedMarks = await marksOfEachStudentByCourseId(marksWithCourseIdAndWeight);
+
+  const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, awaitAllData[0].allCourses);
+  
+  awaitAllData[1].allStudents.forEach(student => {
+    student.courses = studentDataWithTheirCourseAvgs[student.id]
+  });
+  console.log(awaitAllData[1].allStudents)
 })(args);
 
 // Also checks sum of all course weights! Handle error when total test weights do not add up to 100
