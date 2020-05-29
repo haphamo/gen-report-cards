@@ -98,25 +98,81 @@ const calculateAllCourseAvgsForEveryStudent = (objOfStudentsWithMarks, allCourse
   return allStudentsWithCourseAvgs
 };
 
-const readAllCourses = () => (
+const readAllCourses = (arg) => (
   new Promise((resolve, reject) => {
-    const allCourses = {}
-    fs.createReadStream(`data/${args[0]}`)
+    // const allCourses = {}
+    const allData = {
+      allCourses: {},
+      allStudents: [],
+      allTests: {},
+      allMarks: []
+    }
+    fs.createReadStream(`${__dirname}/data/${arg}`)
     .pipe(csv())
     .on('data', row => {
-      allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher, numberOfTests: 0, totalTestWeight: 0}
+      if(Object.keys(row).length > 0) {
+        if(arg === 'courses.csv') {
+          allData.allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher, numberOfTests: 0, totalTestWeight: 0}
+        }
+        if(arg === 'students.csv') {
+          allData.allStudents.push({id: parseInt(row.id), name: row.name.trim()})
+        }
+        if(arg === 'tests.csv') {
+          allData.allTests[row.id] = {test_id: parseInt(row.id), course_id: parseInt(row.course_id), weight: parseInt(row.weight)}
+        }
+        if(arg === 'marks.csv') {
+          allData.allMarks.push({test_id: parseInt(row.test_id), student_id: parseInt(row.student_id), mark: parseInt(row.mark)})
+        }
+      }
     })
-    .on('end', () => resolve(allCourses))
+    .on('end', () => resolve(allData))
     .on('error', error => reject(new Error(`Error: ${error}`)))
   })
 );
 
 // use __dirname for abs path
-const readCsvData = () => {
-  new Promise((resolve, reject) => {
-
+const readCsvData = arg => {
+  // ["courses.csv", "students.csv", "tests.csv", "marks.csv", "output.csv"]
+  console.log(arg)
+    new Promise((resolve, reject) => {
+    const allData = {
+      allCourses: {},
+      allStudents: []
+    }
+    fs.createReadStream(`${__dirname}/data/${arg}`)
+    .pipe(csv())
+    .on('data', row => {
+      if(Object.keys(row).length > 0) {
+        if(arg === 'courses.csv') {
+          allData.allCourses[row.id] = {id: row.id, name: row.name, teacher: row.teacher, numberOfTests: 0, totalTestWeight: 0}
+        } 
+      }
+    })
+    .on('end', () => {
+      // console.log(allData)
+      resolve(allData)
+      console.log("Finished")
+    })
+    .on('error', error => reject(new Error(`Error: ${error}`)))
   })
-}
+};
+
+(async function awaitAll(commandLineArgs) {
+  // console.log(commandLineArgs)
+  const c = await readAllCourses(commandLineArgs[0])
+  const s = await readAllCourses(commandLineArgs[1])
+  const t = await readAllCourses(commandLineArgs[2])
+  const m = await readAllCourses(commandLineArgs[3])
+  let test = await Promise.all([c, s, t, m])
+  // destructure
+  // console.log(test)
+  console.log(test[0].allCourses)
+  console.log(test[1].allStudents)
+  console.log(test[2].allTests)
+  console.log(test[3].allMarks)
+})(args);
+
+
 
 // Also checks sum of all course weights! Handle error when total test weights do not add up to 100
 const calcNumberOfTestsPerCourse = (allCourses, allTests) => {
@@ -142,7 +198,7 @@ const calculateStudentAvg = (data) => {
   return data
 };
 
-(async function finalJsonOutput() {
+async function finalJsonOutput() {
   // reads data from students.csv and sets up final json object
   const allStudents = await readAllStudentsAndSetUpFinalJson();
   // array of mark data from marks.csv
@@ -174,7 +230,7 @@ const calculateStudentAvg = (data) => {
     }
     console.log("Finished!");
   });
-})();
+};
 
 module.exports = {
   readAllStudentsAndSetUpFinalJson,
