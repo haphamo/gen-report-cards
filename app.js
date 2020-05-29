@@ -2,55 +2,6 @@ const fs = require("fs");
 const csv = require("csv-parser");
 const args = process.argv.slice(2);
 
-const readAllStudentsAndSetUpFinalJson = () => (
-  new Promise((resolve, reject) => {
-    const result = {students:[]}
-    fs.createReadStream(`data/${args[1]}`)
-    .pipe(csv())
-    .on('data', row => {
-      // handles empty lines
-      if(Object.keys(row).length > 0) {
-      // added a trim on the row.name, just in case the names have space in them
-      result.students.push({id: parseInt(row.id), name: row.name.trim()})
-      }
-      // sort students by id
-      result.students.sort((a, b) => a.id - b.id)
-    })
-    .on('end', () => resolve(result))
-    .on('error', error => reject(new Error(`Error: ${error}`)))
-  })
-);
-
-const readAllMarks = () => (
-  new Promise((resolve, reject) => {
-    const allMarks = []
-    fs.createReadStream(`data/${args[3]}`)
-    .pipe(csv())
-    .on('data', row => {
-      if(Object.keys(row).length > 0) {
-        // added a trim on the row.name, just in case the names have space in them
-        allMarks.push({test_id: parseInt(row.test_id), student_id: parseInt(row.student_id), mark: parseInt(row.mark)})
-      }
-    })
-    .on('end', () => resolve(allMarks))
-    .on('error', error => reject(new Error(`Error: ${error}`)))
-  })
-);
-
-const readAllTests = () => (
-  new Promise((resolve, reject) => {
-    const allTests = {}
-    fs.createReadStream(`data/${args[2]}`)
-    .pipe(csv())
-    .on('data', row => {
-      if(Object.keys(row).length > 0) {
-        allTests[row.id] = {test_id: parseInt(row.id), course_id: parseInt(row.course_id), weight: parseInt(row.weight)}
-      }
-    })
-    .on('end', () => resolve(allTests))
-    .on('error', error => reject(new Error(`Error: ${error}`)))
-  })
-);
 
 const addCourseIdAndWeightToMarks = (allMarks, allTests) => {
   allMarks.map(mark => {
@@ -98,9 +49,9 @@ const calculateAllCourseAvgsForEveryStudent = (objOfStudentsWithMarks, allCourse
   return allStudentsWithCourseAvgs
 };
 
-const readAllCourses = (arg) => (
+// reads the 4 csv files [courses, students, tests, marks] and stores data to be used later
+const readCsvFile = (arg) => (
   new Promise((resolve, reject) => {
-    // const allCourses = {}
     const allData = {
       allCourses: {},
       allStudents: [],
@@ -135,27 +86,28 @@ const readAllCourses = (arg) => (
 );
 
 (async function generateReportCard(commandLineArgs) {
-  // let test = await Promise.all([c, s, t, m])
-  const awaitAllData = await Promise.all(args.map(arg => readAllCourses(arg)))
+  // don't want to map through the last item
+  const awaitAllData = await Promise.all(args.map(arg => readCsvFile(arg)))
   // destructure
+  const [{allCourses}, {allStudents}, {allTests}, {allMarks}] = awaitAllData
 
-  calcNumberOfTestsPerCourse(awaitAllData[0].allCourses, awaitAllData[2].allTests);
+  calcNumberOfTestsPerCourse(allCourses, allTests);
 
-  const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(awaitAllData[3].allMarks, awaitAllData[2].allTests);
+  const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests);
 
   const organizedMarks = await marksOfEachStudentByCourseId(marksWithCourseIdAndWeight);
 
-  const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, awaitAllData[0].allCourses);
+  const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, allCourses);
   
-  awaitAllData[1].allStudents.map(student => {
+  allStudents.map(student => {
     student.courses = studentDataWithTheirCourseAvgs[student.id]
   });
   
-  const calculatedTotalAvg = calculateStudentAvg(awaitAllData[1].allStudents)
+  const calculatedTotalAvg = calculateStudentAvg(allStudents)
 
-  const stringified = JSON.stringify(awaitAllData[1].allStudents);
+  const stringified = JSON.stringify(allStudents);
 
-  fs.writeFile(`data/${args[4]}`, stringified, err => {
+  fs.writeFile(`${__dirname}/data/${commandLineArgs[4]}`, stringified, err => {
     if(err) {
       console.error(err);
     }
@@ -178,7 +130,6 @@ const calcNumberOfTestsPerCourse = (allCourses, allTests) => {
 };
 
 const calculateStudentAvg = (data) => {
-  // console.log(data)
   data.map(student => {
     const sumOfCourseAvgs = student.courses.reduce((prev, curr) => prev + curr.courseAverage, 0)
     const numberOfEnrolledCourses = student.courses.length
@@ -188,48 +139,11 @@ const calculateStudentAvg = (data) => {
   return data
 };
 
-async function finalJsonOutput() {
-  // reads data from students.csv and sets up final json object
-  const allStudents = await readAllStudentsAndSetUpFinalJson();
-  // array of mark data from marks.csv
-  const allMarks = await readAllMarks(); 
-  // obj with test id's as keys and the course & weight as its value, data taken from tests.csv
-  const allTests = await readAllTests();
-  // obj with course id as keys and the name and teacher as it's value, data from courses.csv
-  const allCourses = await readAllCourses();
-  // maps through all the tests to find out the number of tests for every course
-  calcNumberOfTestsPerCourse(allCourses, allTests)
-  // array of mark data which includes the course id and weight, this is to set up the calc
-  const marksWithCourseIdAndWeight = addCourseIdAndWeightToMarks(allMarks, allTests);
-  // the marks are calculated to include their weight and sorted by course and then by student id
-  const organizedMarks = await marksOfEachStudentByCourseId(marksWithCourseIdAndWeight);
-  // course avgs are calculated for each student resulting in an object with the student id as keys and its value is an array of the courses enrolled with their course average
-  const studentDataWithTheirCourseAvgs = calculateAllCourseAvgsForEveryStudent(organizedMarks, allCourses);
-  // adds the courses enrolled with course avgs for all students
-  allStudents.students.map(student => {
-    student.courses = studentDataWithTheirCourseAvgs[student.id]
-  });
-  // adds totalAverage key to each student
-  const calculatedTotalAvg = calculateStudentAvg(allStudents)
-
-  const stringified = JSON.stringify(allStudents);
-
-  fs.writeFile(`data/${args[4]}`, stringified, err => {
-    if(err) {
-      console.error(err);
-    }
-    console.log("Finished!");
-  });
-};
 
 module.exports = {
-  readAllStudentsAndSetUpFinalJson,
-  readAllMarks,
-  readAllTests,
-  readAllCourses,
-  calculateAllCourseAvgsForEveryStudent,
   addCourseIdAndWeightToMarks,
   marksOfEachStudentByCourseId,
-  calculateStudentAvg,
-  calcNumberOfTestsPerCourse
+  calculateAllCourseAvgsForEveryStudent,
+  calcNumberOfTestsPerCourse,
+  calculateStudentAvg
 }

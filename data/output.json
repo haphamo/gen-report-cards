@@ -1,73 +1,71 @@
-{
-  "students": [
-    {
-      "id": 1,
-      "name": "Jenny Nguy",
-      "courses": [
-        {
-          "id": 1,
-          "courseAverage": 90.1,
-          "name": "Biology",
-          "teacher": "Mr. D"
-        },
-        {
-          "id": 2,
-          "courseAverage": 51.8,
-          "name": "History",
-          "teacher": " Mrs. P"
-        },
-        {
-          "id": 3,
-          "courseAverage": 74.2,
-          "name": "Math",
-          "teacher": " Mrs. C"
-        }
-      ],
-      "totalAverage": 72.03
-    },
-    {
-      "id": 2,
-      "name": "Tammie Chung",
-      "courses": [
-        {
-          "id": 1,
-          "courseAverage": 50.1,
-          "name": "Biology",
-          "teacher": "Mr. D"
-        },
-        {
-          "id": 3,
-          "courseAverage": 74.2,
-          "name": "Math",
-          "teacher": " Mrs. C"
-        }
-      ],
-      "totalAverage": 62.15
-    },
-    {
-      "id": 3,
-      "name": "Tamires Lowande",
-      "courses": [
-        {
-          "id": 1,
-          "courseAverage": 90.1,
-          "name": "Biology",
-          "teacher": "Mr. D"
-        },
-        {
-          "id": 2,
-          "courseAverage": 51.8,
-          "name": "History",
-          "teacher": " Mrs. P"
-        },
-        {
-          "id": 3,
-          "courseAverage": 74.2,
-          "name": "Math",
-          "teacher": " Mrs. C"
-        }
-      ],
-      "totalAverage": 72.03
-    }
-  ]
-}
+[
+  {
+    "id": 1,
+    "name": "Jenny Nguy",
+    "courses": [
+      {
+        "id": 1,
+        "courseAverage": 90.1,
+        "name": "Biology",
+        "teacher": "Mr. D"
+      },
+      {
+        "id": 2,
+        "courseAverage": 51.8,
+        "name": "History",
+        "teacher": " Mrs. P"
+      },
+      {
+        "id": 3,
+        "courseAverage": 74.2,
+        "name": "Math",
+        "teacher": " Mrs. C"
+      }
+    ],
+    "totalAverage": 72.03
+  },
+  {
+    "id": 2,
+    "name": "Tammie Chung",
+    "courses": [
+      {
+        "id": 1,
+        "courseAverage": 50.1,
+        "name": "Biology",
+        "teacher": "Mr. D"
+      },
+      {
+        "id": 3,
+        "courseAverage": 74.2,
+        "name": "Math",
+        "teacher": " Mrs. C"
+      }
+    ],
+    "totalAverage": 62.15
+  },
+  {
+    "id": 3,
+    "name": "Tamires Lowande",
+    "courses": [
+      {
+        "id": 1,
+        "courseAverage": 90.1,
+        "name": "Biology",
+        "teacher": "Mr. D"
+      },
+      {
+        "id": 2,
+        "courseAverage": 51.8,
+        "name": "History",
+        "teacher": " Mrs. P"
+      },
+      {
+        "id": 3,
+        "courseAverage": 74.2,
+        "name": "Math",
+        "teacher": " Mrs. C"
+      }
+    ],
+    "totalAverage": 72.03
+  }
+]
