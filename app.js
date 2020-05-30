@@ -61,6 +61,7 @@ const readCsvFile = (arg) => (
     fs.createReadStream(`${__dirname}/data/${arg}`)
     .pipe(csv())
     .on('data', row => {
+      // handles empty rows in csv files
       if(Object.keys(row).length > 0) {
         switch(arg) {
           case 'courses.csv':
@@ -135,7 +136,6 @@ const calcNumberOfTestsPerCourse = (allCourses, allTests) => {
 
 const calculateStudentAvg = (data) => {
   data.map(student => {
-    console.log(student)
     const sumOfCourseAvgs = student.courses.reduce((prev, curr) => prev + curr.courseAverage, 0)
     const numberOfEnrolledCourses = student.courses.length
     const totalAvg = parseFloat((sumOfCourseAvgs / numberOfEnrolledCourses).toFixed(2))
